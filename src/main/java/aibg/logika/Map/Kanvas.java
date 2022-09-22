@@ -1,6 +1,6 @@
-package aibg.logika.Map;
+/*package aibg.logika.Map;
 
-import aibg.logika.Entity.Player;
+import aibg.logika.Map.Entity.Player;
 
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -69,3 +69,4 @@ public class Kanvas extends Canvas {
 
 
 }
+*/

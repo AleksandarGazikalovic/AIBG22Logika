@@ -1,4 +1,4 @@
-package aibg.logika.Map;
+/*package aibg.logika.Map;
 
 import java.awt.*;
 import java.awt.event.WindowAdapter;
@@ -39,3 +39,4 @@ public class Frejm extends Frame {
     }
 
 }
+*/

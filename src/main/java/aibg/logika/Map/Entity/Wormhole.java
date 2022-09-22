@@ -1,16 +1,25 @@
-package aibg.logika.Entity;
+package aibg.logika.Map.Entity;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import java.awt.*;
 
 // trebalo bi da radi samo ako je postavljeno simetricno u odnosu na horizontalu, glavnu ili sporednu dijagonalu
 // ostalo nisam testirao
+@Getter
+@Setter
+public class Wormhole implements Entity {
 
-public class Wormhole extends Entity{
+    String type = "WORMHOLE";
 
     Wormhole connectedWormhole = null; // Sa kojom crvotocinom je povezana
 
-    public Wormhole(int r, int q) {
+   /*public Wormhole(int r, int q) {
         super(r, q);
+    }*/
+
+    public Wormhole() {
     }
 
     //TODO ovo mozda nije potrebno
@@ -22,29 +31,4 @@ public class Wormhole extends Entity{
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    @Override
-    public void paint(Graphics g) {
-        g.setColor(Color.white);
-        g.drawOval(xCenter + 4*hexagonRadius*q + 2*hexagonRadius*r - 5, yCenter + 3*hexagonRadius*r - 5, 10, 10);
-    }
 }

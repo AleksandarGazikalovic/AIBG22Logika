@@ -1,9 +1,10 @@
 package aibg.logika.service.implementation;
 
-import aibg.logika.domain.Game;
+import aibg.logika.Map.Map;
 import aibg.logika.dto.*;
 import aibg.logika.service.GameService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
@@ -11,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.net.URI;
+import java.nio.file.Path;
 
 @Service
 @Getter
@@ -18,6 +21,7 @@ import java.io.File;
 public class GameServiceImplementation implements GameService {
 
     private Logger LOG = LoggerFactory.getLogger(GameService.class);
+    public static File MAPS_FOLDER = new File("C:\\Users\\ALEKSANDAR\\Desktop\\aibg_logika\\logika\\maps\\finalMap.txt");
 
 
     /* treba videti kako prihvatati različite mape */
@@ -26,9 +30,10 @@ public class GameServiceImplementation implements GameService {
 
         try {
             ObjectMapper mapper = new ObjectMapper();
-            //Map map = new Map(new File());
-            //String gameState = mapper.writeValueAsString(map);
-            String gameState=null;
+            Map map = new Map(29, MAPS_FOLDER.toPath());
+            String gameState = mapper.writeValueAsString(map);
+            LOG.info(gameState);
+            //String gameState=null;
             return new GameStateResponseDTO(gameState);
         }
         catch (Exception e) {
