@@ -1,4 +1,4 @@
-package aibg.logika.domain;
+package aibg.logika.Game;
 
 import lombok.Getter;
 import lombok.Setter;

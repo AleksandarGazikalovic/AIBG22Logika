@@ -1,15 +1,22 @@
-package aibg.logika.Entity;
+package aibg.logika.Map.Entity;
 
 import aibg.logika.Map.Map;
 
 import java.awt.*;
 // TODO posto se Player cuva u Tile onda je bolje da se cuva Tile u kome se nalazi nego koordinate Player-a
-public class Player extends Entity{
+public class Player implements Entity {
+    protected int xCenter = 600; // koordinata centra
+    protected int yCenter = 350; // koordinata centra
+    protected int hexagonRadius = 10; // "poluprecnik" - dimenzija za crtanje heksagona
+    protected int r; // horizontala
+    protected int q; // glavna dijagonala
+
 
     private Map map;
 
-    public Player(int r, int q, Map map){
-        super(r,q);
+   public Player(int r, int q, Map map){
+        this.r=r;
+        this.q=q;
         this.map = map;
     }
 
@@ -42,7 +49,7 @@ public class Player extends Entity{
         }
 
         // provera da li je igrac usao  wormhole
-        if(map.isWormhole(r, q)){
+        /*if(map.isWormhole(r, q)){
             if(map.isFree(-rInitial, -qInitial)){
                 r =-rInitial;
                 q = -qInitial;
@@ -61,31 +68,6 @@ public class Player extends Entity{
 
         if(r==rInitial && q==qInitial){
             System.out.println("Polje je zauzeto ili je outOfBound");
-        }
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public void paint(Graphics g){
-        g.setColor(Color.white);
-        g.fillOval(xCenter + 4*hexagonRadius*q + 2*hexagonRadius*r - 5, yCenter + 3*hexagonRadius*r - 5, 10, 10);
+        }*/
     }
 }
