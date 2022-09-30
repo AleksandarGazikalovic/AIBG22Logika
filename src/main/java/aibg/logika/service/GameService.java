@@ -1,13 +1,10 @@
 package aibg.logika.service;
 
-import aibg.logika.dto.DTO;
-import aibg.logika.dto.PlayerViewRequestDTO;
-import aibg.logika.dto.DoActionRequestDTO;
-import aibg.logika.dto.RemovePlayerRequestDTO;
+import aibg.logika.dto.*;
 
 public interface GameService {
 
-    DTO startGameState();
+    DTO startGameState(GameStateRequestDTO dto);
 
     DTO playerView(PlayerViewRequestDTO dto);
 

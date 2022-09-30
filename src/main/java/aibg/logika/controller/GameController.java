@@ -24,9 +24,9 @@ public class GameController {
     @Autowired
     public GameController(GameService gameService) {this.gameService = gameService;}
 
-    @GetMapping ("/getStartGameState")
-    public ResponseEntity<DTO> startGameState() {
-        DTO response = gameService.startGameState();
+    @PostMapping ("/getStartGameState")
+    public ResponseEntity<DTO> startGameState(@RequestBody GameStateRequestDTO dto) {
+        DTO response = gameService.startGameState(dto);
 
         if(response instanceof GameStateResponseDTO) {
             return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
