@@ -1,31 +1,42 @@
 package aibg.logika.Map.Entity;
 
+import aibg.logika.Game.GameParameters;
 import aibg.logika.Map.Map;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.awt.*;
-// TODO posto se Player cuva u Tile onda je bolje da se cuva Tile u kome se nalazi nego koordinate Player-a
+
+@Getter
+@Setter
 public class Player implements Entity {
-    protected int xCenter = 600; // koordinata centra
-    protected int yCenter = 350; // koordinata centra
-    protected int hexagonRadius = 10; // "poluprecnik" - dimenzija za crtanje heksagona
+    String type = "PLAYER";
     protected int r; // horizontala
     protected int q; // glavna dijagonala
+    protected int playerIdx;
+    @JsonIgnore
+    protected Map map;
+    private int health = GameParameters.STARTING_HEALTH;
+    private int power = GameParameters.STARTING_POWER;
+    private int level = 1;
+    @JsonIgnore
+    private int experience = 0;
+    @JsonIgnore //da li im prosledjivati poene, mozda neko smisli taktiku da jure najboljeg
+    private int points = 0;
 
-
-    private Map map;
-
-   public Player(int r, int q, Map map){
-        this.r=r;
-        this.q=q;
+    public Player(int r, int q, int playerIdx, Map map) {
+        this.r = r;
+        this.q = q;
+        this.playerIdx = playerIdx;
         this.map = map;
     }
 
 
-
-    public void move(String direction){
+    public void move(String direction) {
         int rInitial = r; //stare vrednosti lokacije, kako bi entity postavili na null
         int qInitial = q;
-        switch (direction){
+        switch (direction) {
             case "nw":
                 r--;
                 break;

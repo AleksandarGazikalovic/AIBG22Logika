@@ -8,9 +8,6 @@ import java.awt.*;
 @Getter
 @Setter
 public abstract class Tile {
-    private int xCenter = 600; // x koordinata centra
-    private int yCenter = 350; // y koordinata centra
-    private int hexagonRadius = 10; // "poluprecnik" - dimenzija za crtanje heksagona
     private int r; // prva koordinata (horizontala)
     private int q; // druga koordinata (glavna dijagonala)
     private Entity entity;
