@@ -1,5 +1,6 @@
 package aibg.logika.Map.Entity;
 
+import aibg.logika.Map.Map;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,6 +12,16 @@ public class Blackhole implements Entity{
     String type = "BLACKHOLE";
 
     public Blackhole() {
+    }
+
+    @Override
+    public void stepOn(Player player, Map map, int q, int r) {
+
+    }
+
+    @Override
+    public void attacked(Entity attacker, Map map, int q, int r) {
+
     }
 //    @Override
 //    public void paint(Graphics g) {

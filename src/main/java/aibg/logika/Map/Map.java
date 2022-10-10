@@ -114,6 +114,9 @@ public class Map implements Serializable {
         }
     }
 
+    public Tile getTile(int q, int r) {
+        return tilemap.get(hash(q,r,-q-r));
+    }
 
 
    /* public void setEntity(int r, int q, Entity entity){
