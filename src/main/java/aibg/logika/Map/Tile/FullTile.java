@@ -5,8 +5,8 @@ import lombok.Getter;
 
 @Getter
 public class FullTile extends Tile {
-    public FullTile(int r, int q, Entity entity) {
-        super(r, q, entity);
+    public FullTile(int q, int r, Entity entity) {
+        super(q, r, entity);
         this.setTileType("FULL");
     }
 }

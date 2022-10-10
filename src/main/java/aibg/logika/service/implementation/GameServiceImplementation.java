@@ -4,6 +4,7 @@ import aibg.logika.Game.Game;
 import aibg.logika.Map.Map;
 import aibg.logika.dto.*;
 import aibg.logika.service.GameService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
@@ -43,6 +44,7 @@ public class GameServiceImplementation implements GameService {
             return new ErrorResponseDTO("Greška pri učitavanju mape.");
         }
     }
+
     @Override
     public DTO playerView(PlayerViewRequestDTO dto) {
 
@@ -57,7 +59,16 @@ public class GameServiceImplementation implements GameService {
 
     @Override
     public DTO doAction(DoActionRequestDTO dto) {
-        return null;
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            Game game = mapper.readValue(dto.getGameState(), Game.class);
+            game.update(dto.getAction(), dto.getPlayerIdx());
+            String gameState = mapper.writeValueAsString(game);
+            return new DoActionResponseDTO(gameState);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     @Override

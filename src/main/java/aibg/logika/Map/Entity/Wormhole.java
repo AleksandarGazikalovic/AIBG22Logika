@@ -1,9 +1,8 @@
 package aibg.logika.Map.Entity;
 
+import aibg.logika.Map.Map;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.awt.*;
 
 // trebalo bi da radi samo ako je postavljeno simetricno u odnosu na horizontalu, glavnu ili sporednu dijagonalu
 // ostalo nisam testirao
@@ -31,4 +30,13 @@ public class Wormhole implements Entity {
         }
     }
 
+    @Override
+    public void stepOn(Player player, Map map, int q, int r) {
+
+    }
+
+    @Override
+    public void attacked(Entity attacker, Map map, int q, int r) {
+
+    }
 }

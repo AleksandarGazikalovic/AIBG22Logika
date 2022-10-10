@@ -6,8 +6,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.awt.*;
-
 @Getter
 @Setter
 public class Player implements Entity {
@@ -80,5 +78,15 @@ public class Player implements Entity {
         if(r==rInitial && q==qInitial){
             System.out.println("Polje je zauzeto ili je outOfBound");
         }*/
+    }
+
+    @Override
+    public void stepOn(Player player, Map map, int q, int r) {
+
+    }
+
+    @Override
+    public void attacked(Entity attacker, Map map, int q, int r) {
+
     }
 }
