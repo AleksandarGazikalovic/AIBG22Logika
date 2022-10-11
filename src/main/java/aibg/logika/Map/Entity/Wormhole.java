@@ -13,12 +13,14 @@ public class Wormhole implements Entity {
     String type = "WORMHOLE";
 
     Wormhole connectedWormhole = null; // Sa kojom crvotocinom je povezana
+    int q,r;
 
    /*public Wormhole(int r, int q) {
         super(r, q);
     }*/
 
     public Wormhole() {
+
     }
 
     //TODO ovo mozda nije potrebno
@@ -36,7 +38,7 @@ public class Wormhole implements Entity {
     }
 
     @Override
-    public void attacked(Entity attacker, Map map, int q, int r) {
+    public void attacked(LiveEntity attacker, Map map, int q, int r) {
 
     }
 }

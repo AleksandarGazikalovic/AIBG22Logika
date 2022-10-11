@@ -6,9 +6,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
+import static java.lang.Integer.max;
+import static java.lang.Math.abs;
+
 @Getter
 @Setter
-public class Player implements Entity {
+public class Player extends LiveEntity {
     String type = "PLAYER";
     protected int r; // horizontala
     protected int q; // glavna dijagonala
@@ -21,7 +24,11 @@ public class Player implements Entity {
     @JsonIgnore
     private int experience = 0;
     @JsonIgnore //da li im prosledjivati poene, mozda neko smisli taktiku da jure najboljeg
+    private int score = 0;
+    private boolean trapped=false;
     private int points = 0;
+    @JsonIgnore // Zone kao int od 1 do 3 gde je najdalja zona 3 (pocetna)
+    private int zone = 3;
 
     public Player(int r, int q, int playerIdx, Map map) {
         this.r = r;
@@ -80,13 +87,45 @@ public class Player implements Entity {
         }*/
     }
 
+    public void increaseExperience(int inc){
+        experience+=inc;
+    }
+    // TODO menjati level i power na osnovu experience-a // mozda spojiti experience i score u jednmu promenjlivu?
+    public void increaseScore(int inc){
+        score+=inc;
+    }
+
+    public void illegalAction(){
+        // TODO when illegal action happens
+    }
+
+
     @Override
     public void stepOn(Player player, Map map, int q, int r) {
-
+        updateZone();
+        //illegal ili da ga rani
+        player.illegalAction();
     }
 
     @Override
-    public void attacked(Entity attacker, Map map, int q, int r) {
+    public void attacked(LiveEntity attacker, Map map, int q, int r) {
+        health-= attacker.getPower();
+        if(health<=0){
+            //TODO vratiti na njegovo pocetno polje i smanjiti score
+        }
+    }
 
+
+
+
+
+    public void updateZone(){
+        int max = abs(max(q, max(r, -r-q)));
+        if( 14 >= max && max <= 11 )
+            zone = 3;
+        else if(max <11 && max >= 5)
+            zone = 2;
+        else if(max < 5 && max>= 2)
+            zone= 1;
     }
 }
