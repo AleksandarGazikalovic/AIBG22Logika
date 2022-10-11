@@ -1,7 +1,9 @@
 package aibg.logika.Game;
 
 import aibg.logika.Action.Direction;
+import aibg.logika.Map.Entity.Blackhole;
 import aibg.logika.Map.Entity.Boss;
+import aibg.logika.Map.Entity.Entity;
 import aibg.logika.Map.Entity.Player;
 import aibg.logika.Map.Map;
 import aibg.logika.Map.Tile.Tile;
@@ -50,17 +52,26 @@ public class Game implements Serializable {
         if (action == null) {
             throw new GameException("Action is null");
         } else {
+            if(active.isTrapped()){ //ukoliko je u blackhole ne moze da radi akciju
+                ((Blackhole)(map.getTile(active.getQ(), active.getR()).getEntity())).releasePlayer();
+                return;
+            }
             String[] actionParams = action.split("-");
-            Tile actionTile = calculateCoords(active.getQ(), active.getR(), actionParams[1]);
+            Tile actionTile = calculateCoords(active.getQ(), active.getR(), actionParams[1]); // TODO nije dobro- valjda se za napad prosledjuju koordinate a ne smer?
             int actQ=actionTile.getQ();
             int actR=actionTile.getR();
+            Entity passiveEntity=actionTile.getEntity();
+            //ovaj deo proverava da nije neki player na tom polju, ako jeste nad njime ce se obavljati radnja
+            for(java.util.Map.Entry<Integer, Player> pair : players.entrySet()){
+                if(pair.getValue().getQ()==actQ && pair.getValue().getR()==actR) passiveEntity = pair.getValue();
+            }
             switch (actionParams[0]) {
                 case "move": {
-                    actionTile.getEntity().stepOn(active,this.map,actQ,actR);
+                    passiveEntity.stepOn(active,this.map,actQ,actR);
                     break;
                 }
                 case "attack": {
-                    actionTile.getEntity().attacked(active,this.map,actQ,actR);
+                    passiveEntity.attacked(active,this.map,actQ,actR);
 
                     break;
                 }

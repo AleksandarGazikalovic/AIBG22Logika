@@ -10,6 +10,8 @@ public class GameParameters {
     public static final int EXP_ON_KILL = 250;//menjati
     public static final int EXP_GATHER = 30; //menjati
     public static final int EXP_BY_TIME = 5; //menjati
+    public static final int FENCE_HEALTH = 300;
+    public static final int BOSS_POWER = 100;
     //revive points
     //shields
 }
