@@ -54,30 +54,35 @@ public class Game implements Serializable {
         } else {
             if(active.isTrapped()){ //ukoliko je u blackhole ne moze da radi akciju
                 ((Blackhole)(map.getTile(active.getQ(), active.getR()).getEntity())).releasePlayer();
-                return;
             }
-            String[] actionParams = action.split("-");
-            Tile actionTile = calculateCoords(active.getQ(), active.getR(), actionParams[1]); // TODO nije dobro- valjda se za napad prosledjuju koordinate a ne smer?
-            int actQ=actionTile.getQ();
-            int actR=actionTile.getR();
-            Entity passiveEntity=actionTile.getEntity();
-            //ovaj deo proverava da nije neki player na tom polju, ako jeste nad njime ce se obavljati radnja
-            for(java.util.Map.Entry<Integer, Player> pair : players.entrySet()){
-                if(pair.getValue().getQ()==actQ && pair.getValue().getR()==actR) passiveEntity = pair.getValue();
-            }
-            switch (actionParams[0]) {
-                case "move": {
-                    passiveEntity.stepOn(active,this.map,actQ,actR);
-                    break;
+            else {
+                String[] actionParams = action.split("-");
+                Tile actionTile = calculateCoords(active.getQ(), active.getR(), actionParams[1]); // TODO nije dobro- valjda se za napad prosledjuju koordinate a ne smer?
+                int actQ = actionTile.getQ();
+                int actR = actionTile.getR();
+                Entity passiveEntity = actionTile.getEntity();
+                //ovaj deo proverava da nije neki player na tom polju, ako jeste nad njime ce se obavljati radnja
+                for (java.util.Map.Entry<Integer, Player> pair : players.entrySet()) {
+                    if (pair.getValue().getQ() == actQ && pair.getValue().getR() == actR)
+                        passiveEntity = pair.getValue();
                 }
-                case "attack": {
-                    passiveEntity.attacked(active,this.map,actQ,actR);
+                switch (actionParams[0]) {
+                    case "move": {
+                        passiveEntity.stepOn(active, this.map, actQ, actR);
+                        break;
+                    }
+                    case "attack": {
+                        passiveEntity.attacked(active, this.map, actQ, actR);
 
-                    break;
+                        break;
+                    }
+                    default:
+                        throw new GameException("Action doesn't exist!");
                 }
-                default:
-                    throw new GameException("Action doesn't exist!");
             }
+        }
+        if(playerIdx == 4){
+            hugoBoss.turn(map,players);
         }
     }
 

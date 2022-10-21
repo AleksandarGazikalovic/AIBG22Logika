@@ -2,12 +2,14 @@ package aibg.logika.Action;
 
 public enum Direction {
 
-    NE(+1,-1),
-    NW(0,-1),
-    W(-1,0),
-    SW(-1,+1),
+    E(+1,0),
     SE(0,+1),
-    E(+1,0);
+    SW(-1,+1),
+    W(-1,0),
+    NW(0,-1),
+    NE(+1,-1);
+
+
 
     public int q;
     public int r;
