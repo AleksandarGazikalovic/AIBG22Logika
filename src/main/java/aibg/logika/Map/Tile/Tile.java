@@ -1,13 +1,16 @@
 package aibg.logika.Map.Tile;
 
 import aibg.logika.Map.Entity.Entity;
+import aibg.logika.Map.Entity.LiveEntity;
+import aibg.logika.Map.Entity.Player;
+import aibg.logika.Map.Map;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.awt.*;
 @Getter
 @Setter
-public class Tile {
+public class Tile{
     private int r; // prva koordinata (horizontala)
     private int q; // druga koordinata (glavna dijagonala)
     private Entity entity;
