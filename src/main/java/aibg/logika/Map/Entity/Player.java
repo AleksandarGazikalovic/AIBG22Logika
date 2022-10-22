@@ -140,4 +140,36 @@ public class Player extends LiveEntity {
         else if(max < 5 && max>= 2)
             zone= 1;
     }
+
+
+
+    // treba dodati gde ce se pozivati, mozda posle attack-a ?
+    // da li se povecavaju helti ?
+    public void levelUp(){
+        if (experience >= GameParameters.EXP_TO_LVL_UP) {
+            if(level < GameParameters.MAX_LEVEL){
+                level++;
+                experience -= GameParameters.EXP_TO_LVL_UP; // vraca na nulu (+ visak ako je prebacio granicu)
+                switch (level)   {
+                    case 2:{
+                        power += GameParameters.LEVEL_2_POWER_INCREMENT;
+                        break;
+                    }
+                    case 3:{
+                        power += GameParameters.LEVEL_3_POWER_INCREMENT;
+                        break;
+                    }
+                    case 4:{
+                        power += GameParameters.LEVEL_4_POWER_INCREMENT;
+                        break;
+                    }
+                    case 5:{
+                        power += GameParameters.LEVEL_5_POWER_INCREMENT;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
 }
