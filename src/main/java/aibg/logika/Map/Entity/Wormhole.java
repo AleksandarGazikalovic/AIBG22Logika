@@ -1,5 +1,6 @@
 package aibg.logika.Map.Entity;
 
+import aibg.logika.Game.Game;
 import aibg.logika.Map.Map;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,12 +33,12 @@ public class Wormhole implements Entity {
     }
 
     @Override
-    public void stepOn(Player player, Map map, int q, int r) {
+    public void stepOn(Player player, Game game, int q, int r) {
 
     }
 
     @Override
-    public void attacked(Entity attacker, Map map, int q, int r) {
+    public void attacked(Entity attacker, Game game, int q, int r) {
 
     }
 }

@@ -1,8 +1,6 @@
 package aibg.logika.Map.Entity;
 
-import aibg.logika.Map.Map;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import aibg.logika.Game.Game;
 
 /*@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY)
 @JsonSubTypes({
@@ -20,14 +18,16 @@ public interface Entity {
      * @param q
      * @param r coordinates of the tile that is being stepped on
      */
-    void stepOn(Player player, Map map, int q, int r);
+    void stepOn(Player player, Game game, int q, int r);
 
-    /**Processes attack on this entity by attacker
+    /**
+     * Processes attack on this entity by attacker
      *
+     * @param game
      * @param q
-     * @param r coordinates of the tile that is being attacked
+     * @param r    coordinates of the tile that is being attacked
      */
-    void attacked(Entity attacker, Map map, int q, int r);
+    void attacked(Entity attacker, Game game, int q, int r);
 
     // TODO remove map - map is not changed because players aren't connected to map in any way, they just store their coordinates locally
 

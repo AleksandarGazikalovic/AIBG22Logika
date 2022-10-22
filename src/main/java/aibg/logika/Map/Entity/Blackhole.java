@@ -1,6 +1,6 @@
 package aibg.logika.Map.Entity;
 
-import aibg.logika.Map.Map;
+import aibg.logika.Game.Game;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,7 +18,7 @@ public class Blackhole implements Entity{
 
     /** Moves and traps the player for 1 move if blackhole is empty*/
     @Override
-    public void stepOn(Player player, Map map, int q, int r) {
+    public void stepOn(Player player, Game game, int q, int r) {
         if(trappedPlayer==null) {
             player.setQ(q);
             player.setR(r);
@@ -31,9 +31,9 @@ public class Blackhole implements Entity{
 
     /** Sends the attack to trapped player, if there is one*/
     @Override
-    public void attacked(Entity attacker, Map map, int q, int r) {
+    public void attacked(Entity attacker, Game game, int q, int r) {
         if(trappedPlayer!=null){
-            trappedPlayer.attacked(attacker,map,q,r);
+            trappedPlayer.attacked(attacker, game, q, r);
         }
         /*else{attacker.illegalAction();}*/
     }

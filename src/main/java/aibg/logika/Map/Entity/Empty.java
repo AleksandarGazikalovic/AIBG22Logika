@@ -1,6 +1,6 @@
 package aibg.logika.Map.Entity;
 
-import aibg.logika.Map.Map;
+import aibg.logika.Game.Game;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,7 +19,7 @@ public class Empty implements Entity{
      * @param r      coordinates of the tile that is being stepped on
      */
     @Override
-    public void stepOn(Player player, Map map, int q, int r) {
+    public void stepOn(Player player, Game game, int q, int r) {
         player.setQ(q);
         player.setR(r);
     }
@@ -27,10 +27,11 @@ public class Empty implements Entity{
     /**
      * Processes attack on this entity by attacker
      *
-     * @param r        coordinates of the tile that is being attacked
+     * @param game
+     * @param r    coordinates of the tile that is being attacked
      */
     @Override
-    public void attacked(Entity attacker, Map map, int q, int r) {
+    public void attacked(Entity attacker, Game game, int q, int r) {
         if(attacker instanceof Player){
             ((Player)attacker).illegalAction();
         }

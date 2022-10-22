@@ -1,6 +1,6 @@
 package aibg.logika.Map.Entity;
 
-import aibg.logika.Map.Map;
+import aibg.logika.Game.Game;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,16 +15,16 @@ public class Fence implements Entity{
     int health=FENCE_HEALTH;
 
     @Override
-    public void stepOn(Player player, Map map, int q, int r) {
+    public void stepOn(Player player, Game game, int q, int r) {
         player.illegalAction();
     }
 
     @Override
-    public void attacked(Entity attacker, Map map, int q, int r) {
+    public void attacked(Entity attacker, Game game, int q, int r) {
         if(attacker instanceof Player){
             health-= ((Player) attacker).getPower();
             if(health<=0){//uklanja sa mape
-                map.getTile(q,r).setEntity(map.getEmptyObj()); // TODO ne mora new, moze da se koristi jedan Empty objekat za sva polja
+                game.getMap().getTile(q,r).setEntity(game.getMap().getEmptyObj());
             }
         }//ignorise napade boss-a
     }
