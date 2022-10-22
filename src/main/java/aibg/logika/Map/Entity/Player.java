@@ -15,6 +15,7 @@ public class Player extends LiveEntity {
     String type = "PLAYER";
     protected int r; // horizontala
     protected int q; // glavna dijagonala
+    protected Spawnpoint spawnpoint;
     protected int playerIdx;
     @JsonIgnore
     protected Map map;
@@ -23,6 +24,8 @@ public class Player extends LiveEntity {
     private int level = 1;
     @JsonIgnore
     private int experience = 0;
+    private int kills = 0;
+    private int deaths = 0;
     @JsonIgnore //da li im prosledjivati poene, mozda neko smisli taktiku da jure najboljeg
     private int score = 0;
     private boolean trapped=false;
@@ -30,9 +33,10 @@ public class Player extends LiveEntity {
     @JsonIgnore // Zone kao int od 1 do 3 gde je najdalja zona 3 (pocetna)
     private int zone = 3;
 
-    public Player(int r, int q, int playerIdx, Map map) {
-        this.r = r;
-        this.q = q;
+    public Player(Spawnpoint spawnpoint, int playerIdx, Map map) {
+        r = spawnpoint.getR();
+        q = spawnpoint.getQ();
+        this.spawnpoint = spawnpoint;
         this.playerIdx = playerIdx;
         this.map = map;
     }
@@ -111,11 +115,19 @@ public class Player extends LiveEntity {
     public void attacked(LiveEntity attacker, Map map, int q, int r) {
         health-= attacker.getPower();
         if(health<=0){
-            //TODO vratiti na njegovo pocetno polje i smanjiti score
+            deaths++;
+            if(attacker instanceof Player){
+                ((Player)attacker).kills++;
+            }
+            respawn();
         }
     }
 
-
+    public void respawn(){
+        r = spawnpoint.getR();
+        q = spawnpoint.getQ();
+        health = GameParameters.STARTING_HEALTH;
+    }
 
 
 
