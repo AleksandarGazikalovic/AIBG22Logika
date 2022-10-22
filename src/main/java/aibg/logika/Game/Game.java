@@ -1,10 +1,7 @@
 package aibg.logika.Game;
 
 import aibg.logika.Action.Direction;
-import aibg.logika.Map.Entity.Blackhole;
-import aibg.logika.Map.Entity.Boss;
-import aibg.logika.Map.Entity.Entity;
-import aibg.logika.Map.Entity.Player;
+import aibg.logika.Map.Entity.*;
 import aibg.logika.Map.Map;
 import aibg.logika.Map.Tile.Tile;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -19,9 +16,13 @@ import java.util.HashMap;
 public class Game implements Serializable {
     private Map map;
     private Player player1;
+    private Spawnpoint spawnpoint1 = new Spawnpoint(-7, -7);
     private Player player2;
+    private Spawnpoint spawnpoint2 = new Spawnpoint(14, -7);
     private Player player3;
+    private Spawnpoint spawnpoint3 = new Spawnpoint(7, 7);
     private Player player4;
+    private Spawnpoint spawnpoint4 = new Spawnpoint(-14, 7);
     @JsonIgnore
     private Boss hugoBoss;
     private Player winner;
@@ -30,10 +31,10 @@ public class Game implements Serializable {
 
     public Game(Map map) {
         this.map = map;
-        this.player1 = new Player(-7, -7, 1, this.map);
-        this.player2 = new Player(14, -7, 2, this.map);
-        this.player3 = new Player(7, 7, 3, this.map);
-        this.player4 = new Player(-14, 7, 4, this.map);
+        this.player1 = new Player(spawnpoint1, 1, this.map);
+        this.player2 = new Player(spawnpoint2, 2, this.map);
+        this.player3 = new Player(spawnpoint3, 3, this.map);
+        this.player4 = new Player(spawnpoint4, 4, this.map);
         this.players = new HashMap<>();
         this.players.put(player1.getPlayerIdx(), player1);
         this.players.put(player2.getPlayerIdx(), player2);
