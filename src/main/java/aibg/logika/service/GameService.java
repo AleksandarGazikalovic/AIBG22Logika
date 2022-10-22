@@ -11,4 +11,10 @@ public interface GameService {
     DTO doAction(DoActionRequestDTO dto);
 
     DTO removePlayer(RemovePlayerRequestDTO dto);
+
+    DTO startTrainGameState(TrainGameStateRequestDTO dto);
+
+    DTO train(TrainRequestDTO dto);
+
+    DTO doActionTrain(Integer gameId, Integer playerIdx, String action);
 }

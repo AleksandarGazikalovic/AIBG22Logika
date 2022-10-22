@@ -35,6 +35,17 @@ public class GameController {
         }
     }
 
+    @PostMapping ("/getStartTrainGameState")
+    public ResponseEntity<DTO> startTrainGameState(@RequestBody TrainGameStateRequestDTO dto) {
+        DTO response = gameService.startTrainGameState(dto);
+
+        if(response instanceof TrainGameStateResponseDTO) {
+            return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+        }else {
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @PostMapping("/getPlayerView")
     public ResponseEntity<DTO> playerView(@RequestBody PlayerViewRequestDTO dto) {
         DTO response = gameService.playerView(dto);
@@ -69,4 +80,18 @@ public class GameController {
         }
 
     }
+
+
+    @PostMapping("/trainAction")
+    public ResponseEntity<DTO> train(@RequestBody TrainRequestDTO dto) {
+        DTO response = gameService.train(dto);
+
+        if(response instanceof TrainResponseDTO) {
+            return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+        }else {
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
 }
