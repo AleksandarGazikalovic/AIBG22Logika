@@ -74,8 +74,7 @@ public class Game implements Serializable {
                 }
                 switch (actionParams[0]) {
                     case "move": {
-                        if (passiveEntity != null) // TODO: dodao sam ovo jer mi baca nullPointerExcception pri testiranju
-                            passiveEntity.stepOn(active, this.map, actQ, actR);
+                        passiveEntity.stepOn(active, this.map, actQ, actR);
                         break;
                     }
                     case "attack": {
