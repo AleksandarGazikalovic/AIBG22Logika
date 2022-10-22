@@ -19,19 +19,19 @@ public class Player extends LiveEntity {
     protected int playerIdx;
     @JsonIgnore
     protected Map map;
-    private int health = GameParameters.STARTING_HEALTH;
-    private int power = GameParameters.STARTING_POWER;
-    private int level = 1;
+    protected int health = GameParameters.STARTING_HEALTH;
+    protected int power = GameParameters.STARTING_POWER;
+    protected int level = 1;
     @JsonIgnore
-    private int experience = 0;
-    private int kills = 0;
-    private int deaths = 0;
+    protected int experience = 0;
+    protected int kills = 0;
+    protected int deaths = 0;
     @JsonIgnore //da li im prosledjivati poene, mozda neko smisli taktiku da jure najboljeg
-    private int score = 0;
-    private boolean trapped=false;
-    private int points = 0;
+    protected int score = 0;
+    protected boolean trapped=false;
+    protected int points = 0;
     @JsonIgnore // Zone kao int od 1 do 3 gde je najdalja zona 3 (pocetna)
-    private int zone = 3;
+    protected int zone = 3;
 
     public Player(Spawnpoint spawnpoint, int playerIdx, Map map) {
         r = spawnpoint.getR();

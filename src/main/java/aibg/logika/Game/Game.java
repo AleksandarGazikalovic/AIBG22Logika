@@ -15,14 +15,19 @@ import java.util.HashMap;
 @Setter
 public class Game implements Serializable {
     private Map map;
-    private Player player1;
-    private Spawnpoint spawnpoint1 = new Spawnpoint(-7, -7);
-    private Player player2;
-    private Spawnpoint spawnpoint2 = new Spawnpoint(14, -7);
-    private Player player3;
-    private Spawnpoint spawnpoint3 = new Spawnpoint(7, 7);
-    private Player player4;
-    private Spawnpoint spawnpoint4 = new Spawnpoint(-14, 7);
+    protected Player player1;
+    @JsonIgnore
+    protected Spawnpoint spawnpoint1 = new Spawnpoint(-7, -7);
+    protected Player player2;
+    @JsonIgnore
+    protected Spawnpoint spawnpoint2 = new Spawnpoint(14, -7);
+    protected Player player3;
+    @JsonIgnore
+    protected Spawnpoint spawnpoint3 = new Spawnpoint(7, 7);
+    protected Player player4;
+    @JsonIgnore
+    protected Spawnpoint spawnpoint4 = new Spawnpoint(-14, 7);
+
     @JsonIgnore
     private Boss hugoBoss;
     private Player winner;
@@ -69,7 +74,8 @@ public class Game implements Serializable {
                 }
                 switch (actionParams[0]) {
                     case "move": {
-                        passiveEntity.stepOn(active, this.map, actQ, actR);
+                        if (passiveEntity != null) // TODO: dodao sam ovo jer mi baca nullPointerExcception pri testiranju
+                            passiveEntity.stepOn(active, this.map, actQ, actR);
                         break;
                     }
                     case "attack": {
