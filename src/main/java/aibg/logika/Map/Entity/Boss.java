@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.lang.Math;
 
 
 import static aibg.logika.Game.GameParameters.BOSS_POWER;
@@ -18,6 +19,7 @@ import static aibg.logika.Game.GameParameters.BOSS_POWER;
 public class Boss extends LiveEntity{
 
     int counter = 0;
+    private static int randomDelayCounter = 0;
     boolean finishedPatern1 = true;
     boolean attackedPlayerOnTile = false;
 
@@ -51,7 +53,6 @@ public class Boss extends LiveEntity{
     public void turn(Map map, HashMap<Integer, Player> players){
         attackZoneOne(map, players);
         attackZoneTwo(map, players);
-
     }
     public void attackZoneOne(Map map, HashMap<Integer, Player> players){
         // Attacks all the players in the first zone.
@@ -68,13 +69,15 @@ public class Boss extends LiveEntity{
         // In order to keep track which pattern to call, we have the values 'patern' and finishedPatern1
         // pattern1 is called for patern = 0, 1, 2, 3, 4. When the first is finished it resets the finishedPAtern1 to true.
 
-        if(counter == 0 || finishedPatern1 == false){
+        if((counter == 0 && randomDelayCounter == 0) || finishedPatern1 == false){
             Tile start = map.getTile(-6,-2);
             patern1(map, players,start, counter);
             counter++;
-        } else {
+        } else if(randomDelayCounter==0){
             patern2(map, players);
             counter = 0;
+        }else{
+            randomDelayCounter--;
         }
     }
 
@@ -89,15 +92,6 @@ public class Boss extends LiveEntity{
             allAttackedTile.add(symmetryPerY(start));
             allAttackedTile.add(symmetryPerY(symmetryPerDiagonal(start)));
 
-//            for (Player player : players.values()) {
-//                Player pom = player;
-//                for (Tile attackedTile : allAttackedTile) {
-//                    if (pom.q == attackedTile.getQ() && pom.r == attackedTile.getR()) {
-//                        pom.attacked(this, map, pom.q, pom.r);
-//                        continue;
-//                    }
-//               }
-//            }
 
             for (Tile attackedTile : allAttackedTile){
                 if(attackedTile.entity() instanceof Empty){
@@ -116,6 +110,7 @@ public class Boss extends LiveEntity{
 
             if(counter == 4) {
                 finishedPatern1 = true;
+                randomDelayCounter=Random();
             } else{
                 finishedPatern1 = false;
             }
@@ -125,7 +120,7 @@ public class Boss extends LiveEntity{
     //prsten napad
     public void patern2(Map map, HashMap<Integer, Player> players){
 
-        ArrayList<Tile> ring = cube_ring(new Tile(0,0),6);
+        ArrayList<Tile> ring = cube_ring(map.getTile(0,0),6);
 
         for (Tile attackedTile : ring){
             if(attackedTile.entity() instanceof Empty){
@@ -141,11 +136,12 @@ public class Boss extends LiveEntity{
                 attackedPlayerOnTile = false;
             }
         }
+        randomDelayCounter=Random();
     }
     //pomocne funkcije
 
 
-    private Tile pom1(Tile hex, Direction direction) {
+    public Tile pom1(Tile hex, Direction direction) {
         return new Tile(hex.getQ() + direction.q, hex.getR() + direction.r);
     }
     private Tile pom2(Tile hex, int radius){
@@ -175,6 +171,15 @@ public class Boss extends LiveEntity{
 
     private Tile symmetryPerDiagonal(Tile start){
         return new Tile(start.getQ()*(-1), start.getR()*(-1));
+    }
+
+    private static int Random(){
+        int max = 7;
+        int min = 3;
+        int range = max - min + 1;
+
+        int rand = (int)(Math.random() * range) + min;
+        return rand;
     }
 
 }
