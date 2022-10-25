@@ -32,16 +32,14 @@ public class GameTraining extends Game{
     @JsonIgnore
     private GameService gameService;
     @JsonIgnore
-    private Integer playerIdx;
-
+    private int playerIdx;
     @JsonIgnore
     private boolean breakCycle;
-
     @JsonIgnore
-    private Integer currPlayerIdx;
+    private int currPlayerIdx;
 
     // konstruktor za slucaj train-a
-    public GameTraining(Map map, Integer playerIdx, GameService gameService/*, TrainingBot bot1, TrainingBot bot2, TrainingBot bot3*/) {
+    public GameTraining(Map map, int playerIdx, GameService gameService/*, TrainingBot bot1, TrainingBot bot2, TrainingBot bot3*/) {
         super(map);
         this.breakCycle = false;
         this.map = map;
@@ -95,11 +93,22 @@ public class GameTraining extends Game{
             // za slucaj prvog poteza
             if (firstTurn) {
 
-                while (currPlayerIdx != playerIdx) { // botovi igraju dok ne dodje red na igraca
+                while (true) { // botovi igraju dok ne dodje red na igraca
+                    if (breakCycle){
+                        breakCycle = false;
+                        return gameState;
+                    }
+                    if(currPlayerIdx==playerIdx) {
+                        gameState = ((DoActionResponseDTO)this.gameService.doActionTrain(gameId, playerIdx, action)).getGameState();
+                        currPlayerIdx++;
+                    }
                     playBot();
+                    if(currPlayerIdx==4) {
+                        breakCycle=true;
+                    }
+                    firstTurn = false;
                 }
-                firstTurn = false;
-                return gameState;
+
             }
 
 
