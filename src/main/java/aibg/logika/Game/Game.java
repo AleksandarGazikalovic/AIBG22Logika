@@ -60,6 +60,18 @@ public class Game implements Serializable {
         } else {
             if(active.isTrapped()){ //ukoliko je u blackhole ne moze da radi akciju
                 ((Blackhole)(map.getTile(active.getQ(), active.getR()).getEntity())).releasePlayer();
+                return;
+            }
+            String[] actionParams = action.split("-");//ja sam za to da bude separator ",", ida i move bude preko koordinata
+            Tile actionTile = calculateCoords(active.getQ(), active.getR(), actionParams[1]); // TODO nije dobro- valjda se za napad prosledjuju koordinate a ne smer?
+            int actQ=actionTile.getQ();
+            int actR=actionTile.getR();
+            //TODO provera da li je u range ta koordinata; ako nije,vraca poslednju koja jeste u tom smeru; to mopzda moze i u okviru obstacle
+            //if(hexDistance(active.getQ(),active.getR(),actQ,actR)>RANGE)
+            Entity passiveEntity=actionTile.getEntity();
+            //ovaj deo proverava da nije neki player na tom polju, ako jeste nad njime ce se obavljati radnja
+            for(java.util.Map.Entry<Integer, Player> pair : players.entrySet()){
+                if(pair.getValue().getQ()==actQ && pair.getValue().getR()==actR) passiveEntity = pair.getValue();
             }
             else {
                 String[] actionParams = action.split("-");
@@ -72,19 +84,19 @@ public class Game implements Serializable {
                     if (pair.getValue().getQ() == actQ && pair.getValue().getR() == actR)
                         passiveEntity = pair.getValue();
                 }
-                switch (actionParams[0]) {
-                    case "move": {
-                        if (passiveEntity != null) // TODO: dodao sam ovo jer mi baca nullPointerExcception pri testiranju
-                            passiveEntity.stepOn(active, this.map, actQ, actR);
-                        break;
+                case "attack": {
+                    if(hexDistance(actQ, actR, active.getQ(), active.getR()) <= GameParameters.RANGE){
+                        Entity obstacle=getObstacle(active.getQ(),active.getR(),actQ,actR);
+                        if(obstacle!=null){
+                            passiveEntity=obstacle;
+                        }
+                        passiveEntity.attacked(active,this.map,actQ,actR);
+                    }else{
+                        active.illegalAction();
                     }
-                    case "attack": {
-                        passiveEntity.attacked(active, this.map, actQ, actR);
 
-                        break;
-                    }
-                    default:
-                        throw new GameException("Action doesn't exist!");
+
+                    break;
                 }
             }
         }
@@ -101,6 +113,56 @@ public class Game implements Serializable {
         return this.map.getTile(newQ,newR);
 
     }
+    // pored ovoga, treba proslediti tacne koordinate udara frontu nekako
+    private Entity getObstacle(int startQ,int startR,int endQ,int endR){
+        int hexDistance=hexDistance(startQ, startR, endQ, endR);
+        double q=startQ,r=startR;
+        double s=-q-r;
+        for(int i=1;i<=hexDistance;i++){
+            //a+(b-a)*1/n *i
+            q=startQ+(endQ-startQ)*1.0*i/hexDistance;
+            r=startR+(endR-startR)*1.0*i/hexDistance;
+            s=-q-r;
+            //rounding
+            int cordQ= (int) Math.round(q);
+            int cordR= (int) Math.round(r);
+            int cordS= (int) Math.round(s);
+            double q_diff=Math.abs(q-cordQ);
+            double r_diff=Math.abs(r-cordR);
+            double s_diff=Math.abs(s-cordS);
+
+            if(q_diff>r_diff && q_diff>s_diff){
+                cordQ=-cordR-cordS;
+            } else if (r_diff>s_diff) {
+                cordR=-cordQ-cordS;
+            }else{
+                cordS=-cordR-cordQ;
+            }
+            for(Player player:players.values()){
+                if(player.getQ()==cordQ && player.getR()==cordR){
+                    return player;
+                }
+            }
+            if(!(map.getTile((int)q,(int)r).getEntity() instanceof Empty)) {
+                return map.getTile((int) q, (int) r).getEntity();
+            }
+        }
+        return null;
+    }
+
+    private int hexDistance(int startQ,int startR,int endQ,int endR){
+        return ( Math.abs(startQ-endQ) + Math.abs(startR-endR) + Math.abs(startQ+startR-endQ-endR) ) / 2;
+    }
+
+
+
+
+
+
+
+
+
+
 }
 
 
