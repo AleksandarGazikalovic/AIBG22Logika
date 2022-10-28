@@ -103,11 +103,15 @@ public class GameServiceImplementation implements GameService {
         ObjectMapper mapper = new ObjectMapper();
         try {
             Game game = mapper.readValue(dto.getGameState(), Game.class); // TODO: iz nekog razloga ovde mi baca error kada ga pozivam iz train-a
-            game.update(dto.getAction(), dto.getPlayerIdx());
+            ErrorResponseDTO error = (ErrorResponseDTO) game.update(dto.getAction(), dto.getPlayerIdx());
             String gameState = mapper.writeValueAsString(game);
-            return new DoActionResponseDTO(gameState);
+            if(error != null) {
+                return error;
+            }else {
+                return new DoActionResponseDTO(gameState);
+            }
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            return new ErrorResponseDTO("Greška pri updatovanja gameState-a");
         }
 
     }
