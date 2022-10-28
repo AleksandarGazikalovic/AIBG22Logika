@@ -4,6 +4,8 @@ import aibg.logika.Action.Direction;
 import aibg.logika.Map.Entity.*;
 import aibg.logika.Map.Map;
 import aibg.logika.Map.Tile.Tile;
+import aibg.logika.dto.DTO;
+import aibg.logika.dto.ErrorResponseDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
@@ -48,7 +50,7 @@ public class Game implements Serializable {
 
     }
 
-    public void update(String action, int playerIdx) {
+    public DTO update(String action, int playerIdx) {
         if (this.winner != null) {
             throw new GameException("Game is finished!");
         }
@@ -60,9 +62,9 @@ public class Game implements Serializable {
         } else {
             if(active.isTrapped()){ //ukoliko je u blackhole ne moze da radi akciju
                 ((Blackhole)(map.getTile(active.getQ(), active.getR()).getEntity())).releasePlayer();
-                return;
-            }
-            String[] actionParams = action.split("-");//ja sam za to da bude separator ",", ida i move bude preko koordinata
+                return new ErrorResponseDTO("Zarobljeni ste u crnoj rupi");
+            } else {
+            String[] actionParams = action.split(",");//ja sam za to da bude separator ",", ida i move bude preko koordinata
             Tile actionTile = calculateCoords(active.getQ(), active.getR(), actionParams[1]); // TODO nije dobro- valjda se za napad prosledjuju koordinate a ne smer?
             int actQ=actionTile.getQ();
             int actR=actionTile.getR();
@@ -73,36 +75,33 @@ public class Game implements Serializable {
             for(java.util.Map.Entry<Integer, Player> pair : players.entrySet()){
                 if(pair.getValue().getQ()==actQ && pair.getValue().getR()==actR) passiveEntity = pair.getValue();
             }
-            else {
-                String[] actionParams = action.split("-");
-                Tile actionTile = calculateCoords(active.getQ(), active.getR(), actionParams[1]); // TODO nije dobro- valjda se za napad prosledjuju koordinate a ne smer?
-                int actQ = actionTile.getQ();
-                int actR = actionTile.getR();
-                Entity passiveEntity = actionTile.getEntity();
-                //ovaj deo proverava da nije neki player na tom polju, ako jeste nad njime ce se obavljati radnja
-                for (java.util.Map.Entry<Integer, Player> pair : players.entrySet()) {
-                    if (pair.getValue().getQ() == actQ && pair.getValue().getR() == actR)
-                        passiveEntity = pair.getValue();
-                }
-                case "attack": {
-                    if(hexDistance(actQ, actR, active.getQ(), active.getR()) <= GameParameters.RANGE){
-                        Entity obstacle=getObstacle(active.getQ(),active.getR(),actQ,actR);
-                        if(obstacle!=null){
-                            passiveEntity=obstacle;
+                switch (actionParams[0]) {
+                    case "attack": {
+                        if (hexDistance(actQ, actR, active.getQ(), active.getR()) <= GameParameters.RANGE) {
+                            Entity obstacle = getObstacle(active.getQ(), active.getR(), actQ, actR);
+                            if (obstacle != null) {
+                                passiveEntity = obstacle;
+                            }
+                            passiveEntity.attacked(active, this.map, actQ, actR);
+                        } else {
+                            active.illegalAction();
                         }
-                        passiveEntity.attacked(active,this.map,actQ,actR);
-                    }else{
-                        active.illegalAction();
+                        break;
                     }
-
-
-                    break;
+                    case "move": {
+                        passiveEntity.stepOn(active,this.map, actQ, actR);
+                        break;
+                    }
+                    default: {
+                        return new ErrorResponseDTO("Poslata pogrešna akcija");
+                    }
                 }
             }
         }
         if(playerIdx == 4){
             hugoBoss.turn(map,players);
         }
+    return null;
     }
 
 
