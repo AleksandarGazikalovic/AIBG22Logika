@@ -28,8 +28,6 @@ public class GameTraining extends Game{
     @JsonIgnore
     private String gameState;
     @JsonIgnore
-    private Boolean firstTurn;
-    @JsonIgnore
     private GameService gameService;
     @JsonIgnore
     private int playerIdx;
@@ -37,15 +35,18 @@ public class GameTraining extends Game{
     private boolean breakCycle;
     @JsonIgnore
     private int currPlayerIdx;
+    @JsonIgnore
+    private String errorMessage;
 
     // konstruktor za slucaj train-a
-    public GameTraining(Map map, int playerIdx, GameService gameService/*, TrainingBot bot1, TrainingBot bot2, TrainingBot bot3*/) {
+    public GameTraining(Map map, int playerIdx, GameService gameService/*
+,TrainingBot bot1, TrainingBot bot2, TrainingBot bot3*/
+) {
         super(map);
         this.breakCycle = false;
         this.map = map;
         this.gameService = gameService;
         this.playerIdx = playerIdx;
-        this.firstTurn = true;
         this.currPlayerIdx = 1;
         this.player1 = new TrainingBot(spawnpoint1, 1, this.map, this.gameService);
         this.player2 = new TrainingBot(spawnpoint2, 2, this.map, this.gameService);
@@ -57,13 +58,13 @@ public class GameTraining extends Game{
                 this.player1 = new Player(spawnpoint1, 1, this.map);
                 break;
             case 2:
-                this.player2 = new Player(spawnpoint1, 2, this.map);
+                this.player2 = new Player(spawnpoint2, 2, this.map);
                 break;
             case 3:
-                this.player3 = new Player(spawnpoint1, 3, this.map);
+                this.player3 = new Player(spawnpoint3, 3, this.map);
                 break;
             case 4:
-                this.player4 = new Player(spawnpoint1, 4, this.map);
+                this.player4 = new Player(spawnpoint4, 4, this.map);
                 break;
         }
         this.players = new HashMap<>();
@@ -72,7 +73,6 @@ public class GameTraining extends Game{
         this.players.put(player3.getPlayerIdx(), player3);
         this.players.put(player4.getPlayerIdx(), player4);
     }
-
 
     public void playBot() { // odigra potez bota i azurira gameState
         TrainingBot currPlayer = (TrainingBot) players.get(currPlayerIdx);
@@ -84,58 +84,37 @@ public class GameTraining extends Game{
     // i na kraju vrati gameState
     public String playTheRound(String action, Integer gameId) {
 
+
+        // dohvati onog koji trenutno treba da odigra
+        // ako je bot, odradi mu akciju i predji na sledeceg, isto i za bossa a on resetuje currPlayerIdx
+        // ako je igrac, njemu vrati trenutni gameState
+
         while (true) {
 
-            // dohvati onog koji trenutno treba da odigra
-            // ako je bot, odradi mu akciju i predji na sledeceg, isto i za bossa a on resetuje currPlayerIdx
-            // ako je igrac, njemu vrati trenutni gameState
+            if (currPlayerIdx == playerIdx) { // igra igrac ili prekida while ako je ponovo dosao red na igraca
+                if (breakCycle){
+                    breakCycle = false;
+                    return errorMessage;
+                }
+                LOG.info("Player did his thing: " + LocalDateTime.now());
+                DoActionResponseDTO actionResponse=((DoActionResponseDTO)this.gameService.doActionTrain(gameId, playerIdx, action));
+                gameState = actionResponse.getGameState();
+                errorMessage = actionResponse.getMessage();
+                currPlayerIdx++;
+                breakCycle = true;
+            } else { // igraju botovi i boss
 
-            // za slucaj prvog poteza
-            if (firstTurn) {
-
-                while (true) { // botovi igraju dok ne dodje red na igraca
-                    if (breakCycle){
-                        breakCycle = false;
-                        return gameState;
-                    }
-                    if(currPlayerIdx==playerIdx) {
-                        gameState = ((DoActionResponseDTO)this.gameService.doActionTrain(gameId, playerIdx, action)).getGameState();
-                        currPlayerIdx++;
-                    }
+                if (currPlayerIdx != 5) { // igra bot
                     playBot();
-                    if(currPlayerIdx==4) {
-                        breakCycle=true;
-                    }
-                    firstTurn = false;
+                } else { // igra boss
+                    // TODO: na ovom mestu u kodu Boss treba da odigra svoj potez, dodati kada bude implementirano
+                    currPlayerIdx = 1;
                 }
 
             }
-
-
-            while (true) {
-
-                if (currPlayerIdx == playerIdx) { // igra igrac ili prekida while ako je ponovo dosao red na igraca
-                    if (breakCycle){
-                        breakCycle = false;
-                        return gameState;
-                    }
-                    LOG.info("Player did his thing: " + LocalDateTime.now());
-                    gameState = ((DoActionResponseDTO)this.gameService.doActionTrain(gameId, playerIdx, action)).getGameState();
-                    currPlayerIdx++;
-                    breakCycle = true;
-                } else { // igraju botovi i boss
-
-                    if (currPlayerIdx != 5) { // igra bot
-                        playBot();
-                    } else { // igra boss
-                        // TODO: na ovom mestu u kodu Boss treba da odigra svoj potez, dodati kada bude implementirano
-                        currPlayerIdx = 1;
-                    }
-
-                }
-            }
-
         }
+
+
 
     }
 

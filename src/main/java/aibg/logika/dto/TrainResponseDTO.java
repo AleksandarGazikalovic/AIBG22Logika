@@ -7,10 +7,13 @@ import lombok.Setter;
 @Setter
 public class TrainResponseDTO extends DTO{
 
+    private String message;
     private String gameState;
+    private String players;
 
-    public TrainResponseDTO(String gameState){
+    public TrainResponseDTO(String message, String gameState, String players) {
+        this.message = message;
         this.gameState = gameState;
+        this.players = players;
     }
-
 }

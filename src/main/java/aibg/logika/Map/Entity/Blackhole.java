@@ -2,19 +2,19 @@ package aibg.logika.Map.Entity;
 
 import aibg.logika.Map.Map;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 // TODO ne sme da se pridje polje do BlackHole, neki zaseban Entity
 @Getter
 @Setter
+@NoArgsConstructor
 public class Blackhole implements Entity{
 
     String type = "BLACKHOLE";
 
     Player trappedPlayer=null;
 
-    public Blackhole() {
-    }
 
     /** Moves and traps the player for 1 move if blackhole is empty*/
     @Override
@@ -31,7 +31,7 @@ public class Blackhole implements Entity{
 
     /** Sends the attack to trapped player, if there is one*/
     @Override
-    public void attacked(LiveEntity attacker, Map map, int q, int r) {
+    public void attacked(Entity attacker, Map map, int q, int r) {
         if(trappedPlayer!=null){
             trappedPlayer.attacked(attacker,map,q,r);
         }

@@ -4,6 +4,7 @@ import aibg.logika.Game.GameParameters;
 import aibg.logika.Map.Map;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import static java.lang.Integer.max;
@@ -11,7 +12,8 @@ import static java.lang.Math.abs;
 
 @Getter
 @Setter
-public class Player extends LiveEntity {
+@NoArgsConstructor
+public class Player implements Entity {
     String type = "PLAYER";
     protected int r; // horizontala
     protected int q; // glavna dijagonala
@@ -26,10 +28,8 @@ public class Player extends LiveEntity {
     protected int experience = 0;
     protected int kills = 0;
     protected int deaths = 0;
-    @JsonIgnore //da li im prosledjivati poene, mozda neko smisli taktiku da jure najboljeg
     protected int score = 0;
     protected boolean trapped=false;
-    protected int points = 0;
     @JsonIgnore // Zone kao int od 1 do 3 gde je najdalja zona 3 (pocetna)
     protected int zone = 3;
 
@@ -93,8 +93,8 @@ public class Player extends LiveEntity {
 
     public void increaseExperience(int inc){
         experience+=inc;
+        levelUp();
     }
-    // TODO menjati level i power na osnovu experience-a // mozda spojiti experience i score u jednmu promenjlivu?
     public void increaseScore(int inc){
         score+=inc;
     }
@@ -112,14 +112,20 @@ public class Player extends LiveEntity {
     }
 
     @Override
-    public void attacked(LiveEntity attacker, Map map, int q, int r) {
-        health-= attacker.getPower();
-        if(health<=0){
-            deaths++;
-            if(attacker instanceof Player){
+    public void attacked(Entity attacker, Map map, int q, int r) {
+        if(attacker instanceof Player) {
+            health-= ((Player) attacker).getPower();
+            if(health<=0){
+                deaths++;
+                ((Player)attacker).increaseExperience(100);
                 ((Player)attacker).kills++;
+                respawn();
             }
-            respawn();
+        } else if (attacker instanceof Boss) {
+            health-= ((Boss) attacker).getPower();
+            if(health<=0){
+                respawn();
+            }
         }
     }
 

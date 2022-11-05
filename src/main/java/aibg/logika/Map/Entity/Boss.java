@@ -3,6 +3,7 @@ package aibg.logika.Map.Entity;
 import aibg.logika.Action.Direction;
 import aibg.logika.Map.Map;
 import aibg.logika.Map.Tile.Tile;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,8 +17,9 @@ import static aibg.logika.Game.GameParameters.BOSS_POWER;
 
 @Getter
 @Setter
-public class Boss extends LiveEntity{
-
+public class Boss implements Entity{
+    @JsonIgnore
+    int power=BOSS_POWER;
     int counter = 0;
     private static int randomDelayCounter = 0;
     boolean finishedPatern1 = true;
@@ -38,13 +40,13 @@ public class Boss extends LiveEntity{
 
 
     @Override
-    public void attacked(LiveEntity attacker, Map map, int q, int r) {
-        // TODO povecaj stats playera
-        ((Player)attacker).increaseScore(attacker.getPower());
-        ((Player)attacker).increaseExperience(attacker.getPower());
+    public void attacked(Entity attacker, Map map, int q, int r) {
+        // TODO povecati exp i score nekim smislenim brojem :)
+        ((Player)attacker).increaseScore(((Player) attacker).getPower());
+        ((Player)attacker).increaseExperience(((Player) attacker).getPower());
     }
 
-    @Override
+
     public int getPower() {
         return BOSS_POWER;
     }
@@ -94,7 +96,7 @@ public class Boss extends LiveEntity{
 
 
             for (Tile attackedTile : allAttackedTile){
-                if(attackedTile.entity() instanceof Empty){
+                if(attackedTile.getEntity() instanceof Empty){
                     for(Player player : players.values()){
                         if(player.getQ() == attackedTile.getQ() && player.getR() == attackedTile.getR()) {
                             player.attacked(this, map, player.getQ(), player.getR());
@@ -103,7 +105,7 @@ public class Boss extends LiveEntity{
                         }
                     }
                     if(attackedPlayerOnTile != true)
-                        attackedTile.entity().attacked(this, map, attackedTile.getQ(), attackedTile.getR());
+                        attackedTile.getEntity().attacked(this, map, attackedTile.getQ(), attackedTile.getR());
                     attackedPlayerOnTile = false;
                 }
             }
@@ -123,7 +125,7 @@ public class Boss extends LiveEntity{
         ArrayList<Tile> ring = cube_ring(map.getTile(0,0),6);
 
         for (Tile attackedTile : ring){
-            if(attackedTile.entity() instanceof Empty){
+            if(attackedTile.getEntity() instanceof Empty){
                 for(Player player : players.values()){
                     if(player.getQ() == attackedTile.getQ() && player.getR() == attackedTile.getR()) {
                         player.attacked(this, map, player.getQ(), player.getR());
@@ -132,7 +134,7 @@ public class Boss extends LiveEntity{
                     }
                 }
                 if(attackedPlayerOnTile != true)
-                    attackedTile.entity().attacked(this, map, attackedTile.getQ(), attackedTile.getR());
+                    attackedTile.getEntity().attacked(this, map, attackedTile.getQ(), attackedTile.getR());
                 attackedPlayerOnTile = false;
             }
         }

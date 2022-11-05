@@ -7,13 +7,13 @@ import lombok.Setter;
 @Setter
 public class DoActionRequestDTO extends DTO{
     private int playerIdx;
-    private String gameState;
-    private String Action;
+    private String action;
+    private int gameId;
 
-    public DoActionRequestDTO(int playerIdx, String gameState, String Action) {
+    public DoActionRequestDTO(int playerIdx, String action, int gameId) {
         this.playerIdx = playerIdx;
-        this.gameState = gameState;
-        this.Action = Action;
+        this.action = action;
+        this.gameId= gameId;
     }
 
 }

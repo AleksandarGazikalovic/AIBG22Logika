@@ -1,7 +1,17 @@
 package aibg.logika.Map.Entity;
 
 import aibg.logika.Map.Map;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
+/*@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = Blackhole.class, name = "BLACKHOLE"),
+        @JsonSubTypes.Type(value = Empty.class, name = "EMPTY"),
+        @JsonSubTypes.Type(value = Fence.class, name = "FENCE"),
+        @JsonSubTypes.Type(value = Wormhole.class, name = "WORMHOLE"),
+}
+)*/
 public interface Entity {
 
     /** Processes attempt of the player to step on the tile with this entity
@@ -17,7 +27,7 @@ public interface Entity {
      * @param q
      * @param r coordinates of the tile that is being attacked
      */
-    void attacked(LiveEntity attacker, Map map, int q, int r);
+    void attacked(Entity attacker, Map map, int q, int r);
 
     // TODO remove map - map is not changed because players aren't connected to map in any way, they just store their coordinates locally
 
