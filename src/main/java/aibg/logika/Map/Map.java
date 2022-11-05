@@ -1,9 +1,7 @@
 package aibg.logika.Map;
 
 import aibg.logika.Game.GameException;
-import aibg.logika.Map.Entity.Blackhole;
-import aibg.logika.Map.Entity.Fence;
-import aibg.logika.Map.Entity.Wormhole;
+import aibg.logika.Map.Entity.*;
 import aibg.logika.Map.Tile.FullTile;
 import aibg.logika.Map.Tile.NormalTile;
 import aibg.logika.Map.Tile.Tile;
@@ -11,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.nio.file.Files;
@@ -21,6 +20,7 @@ import java.util.HashMap;
 import static java.lang.Math.*;
 
 @Getter
+@NoArgsConstructor
 public class Map implements Serializable {
     // https://www.redblobgames.com/grids/hexagons/
 // prva koordinata je r (horizontala), druga je q (glavna dijagonala),
@@ -71,7 +71,7 @@ public class Map implements Serializable {
                             currEntity = mapNode.get(counter).get(counter2).get("entity").asText();
                             switch (currEntity){
                                 case "NONE":
-                                    temp = new NormalTile(q,r);
+                                    temp = new NormalTile(q,r, new Empty());
                                     tiles.get(counter).add(temp);
                                     tilemap.put(hash(q,r,-q-r),temp);
                                     break;
@@ -80,6 +80,12 @@ public class Map implements Serializable {
                                     tiles.get(counter).add(temp);
                                     tilemap.put(hash(q,r,-q-r),temp);
                                     break;
+                                case "WORMHOLE":
+                                    temp = new FullTile(q,r, new Wormhole());
+                                    tiles.get(counter).add(temp);
+                                    tilemap.put(hash(q,r,-q-r),temp);
+                                    wormholes.add((FullTile) temp);
+                                    break;
                                 default:
                                     throw new GameException("Nepostojeca oznaka entiteta pri inicijalizaciji polja mape (" + q + ","+ r+ ")");
                             }
@@ -87,17 +93,17 @@ public class Map implements Serializable {
                         case "FULL":
                             currEntity = mapNode.get(counter).get(counter2).get("entity").asText();
                             switch (currEntity){
-                                case "WORMHOLE":
-                                    temp = new FullTile(q,r, new Wormhole());
-                                    tiles.get(counter).add(temp);
-                                    tilemap.put(hash(q,r,-q-r),temp);
-                                    wormholes.add((FullTile) temp);
-                                    break;
                                 case "FENCE":
                                     temp = new FullTile(q,r, new Fence());
                                     tiles.get(counter).add(temp);
                                     tilemap.put(hash(q,r,-q-r),temp);
                                     fence.add((FullTile) temp);
+                                    break;
+                                case "BOSS":
+                                    temp = new FullTile(q,r, new Boss());
+                                    tiles.get(counter).add(temp);
+                                    tilemap.put(hash(q,r,-q-r),temp);
+                                    wormholes.add((FullTile) temp);
                                     break;
                                 default:
                                     throw new GameException("Nepoznat tip ostrava");
@@ -139,13 +145,13 @@ public class Map implements Serializable {
 
     private int hash(int q, int r, int s){
         if(abs(q) == 1){
-            q=q*15;
+            q=q*17;
         }
         if(abs(q) == 1){
-            r=r*17;
+            r=r*19;
         }
         if(abs(q) == 1){
-            s=s*19;
+            s=s*23;
         }
         int x = q*11+r*151+s*257;
         return x;

@@ -5,6 +5,7 @@ public class GameParameters {
     public static final int STARTING_POWER = 100; //menjati
 
     public static final int RANGE = 3;
+    public static final int MOVE_RANGE = 1;
     public static final int EFFECT_DURATION_BLACKHOLE = 3;
     public static final int TIMER_DURATION = 3 * 60 * 1000;
     public static final int ILLEGAL_MOVES = 10;

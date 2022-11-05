@@ -2,12 +2,14 @@ package aibg.logika.Map.Entity;
 
 import aibg.logika.Map.Map;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 // trebalo bi da radi samo ako je postavljeno simetricno u odnosu na horizontalu, glavnu ili sporednu dijagonalu
 // ostalo nisam testirao
 @Getter
 @Setter
+@NoArgsConstructor
 public class Wormhole implements Entity {
 
     String type = "WORMHOLE";
@@ -19,9 +21,6 @@ public class Wormhole implements Entity {
         super(r, q);
     }*/
 
-    public Wormhole() {
-
-    }
 
     //TODO ovo mozda nije potrebno
     //povezuje ovu crvotocinu sa drugom, potrebno je SAMO JEDNU povezati
@@ -38,7 +37,7 @@ public class Wormhole implements Entity {
     }
 
     @Override
-    public void attacked(LiveEntity attacker, Map map, int q, int r) {
+    public void attacked(Entity attacker, Map map, int q, int r) {
 
     }
 }

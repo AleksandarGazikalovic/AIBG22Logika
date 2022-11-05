@@ -2,8 +2,6 @@ package aibg.logika.service.implementation;
 
 import aibg.logika.Game.Game;
 import aibg.logika.Game.GameTraining;
-import aibg.logika.Map.Entity.Player;
-import aibg.logika.Map.Entity.TrainingBot;
 import aibg.logika.Map.Map;
 import aibg.logika.dto.*;
 import aibg.logika.service.GameService;
@@ -17,9 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.concurrent.Semaphore;
 
 @Service
 @Getter
@@ -29,6 +25,7 @@ public class GameServiceImplementation implements GameService {
     private Logger LOG = LoggerFactory.getLogger(GameService.class);
     private String MAPS_FOLDER = "./maps";
 
+    private HashMap<Integer,Game> games = new HashMap<>();
     private HashMap<Integer, GameTraining> trainingGames = new HashMap<>();
 
 
@@ -40,9 +37,9 @@ public class GameServiceImplementation implements GameService {
             //Proverava da li u maps folderu postoji mapa sa odredjenim nazivom
             if (new File(MAPS_FOLDER, dto.getMapName()).exists()) {
 
-
                 Path mapPath = (new File(MAPS_FOLDER, dto.getMapName())).toPath();
                 Game game = new Game(new Map(29, mapPath));
+                games.put(dto.getGameId(),game);
                 ObjectMapper mapper = new ObjectMapper();
                 String gameState = mapper.writeValueAsString(game);
                 return new GameStateResponseDTO(gameState);
@@ -102,14 +99,12 @@ public class GameServiceImplementation implements GameService {
     public DTO doAction(DoActionRequestDTO dto) {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            Game game = mapper.readValue(dto.getGameState(), Game.class); // TODO: iz nekog razloga ovde mi baca error kada ga pozivam iz train-a
-            ErrorResponseDTO error = (ErrorResponseDTO) game.update(dto.getAction(), dto.getPlayerIdx());
+            Game game = games.get(dto.getGameId());
+            String errorMessage = game.update(dto.getAction(), dto.getPlayerIdx());
+            //mozda izmeniti da vraca svakog igraca odvojeno a ne hashmapu nzm
+            String players=mapper.writeValueAsString(game.getPlayers());
             String gameState = mapper.writeValueAsString(game);
-            if(error != null) {
-                return error;
-            }else {
-                return new DoActionResponseDTO(gameState);
-            }
+            return new DoActionResponseDTO(errorMessage, gameState, players);
         } catch (JsonProcessingException e) {
             return new ErrorResponseDTO("Greška pri updatovanja gameState-a");
         }
@@ -123,20 +118,25 @@ public class GameServiceImplementation implements GameService {
 
     @Override
     public DTO train(TrainRequestDTO dto) {
-
+        ObjectMapper mapper = new ObjectMapper();
         // dohvati game, player odradi svoje, potom botovi i krajnje stanje vraca
         // prvo dohvati game
         GameTraining game = trainingGames.get(dto.getGameId());
 
         // odigra jednu celu rundu
-        game.playTheRound(dto.getAction(), dto.getGameId());
+        String errorMessage = game.playTheRound(dto.getAction(), dto.getGameId());
 
         if (game.getGameState() == null){
             return new ErrorResponseDTO("Greška pri igranju trening igre, nesto je poslo po zlu pri azuriranju gameState-a.");
         }
+        try {
+            String players = mapper.writeValueAsString(game.getPlayers());
+            String gameState = game.getGameState();
+            return new TrainResponseDTO(errorMessage, gameState, players);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
 
-        String gameState = game.getGameState();
-        return new TrainResponseDTO(gameState);
     }
 
     @Override
@@ -144,9 +144,10 @@ public class GameServiceImplementation implements GameService {
         ObjectMapper mapper = new ObjectMapper();
         try {
             Game game = trainingGames.get(gameId);
-            game.update(action, playerIdx);
+            String errorMessage = game.update(action, playerIdx);
+            String players = mapper.writeValueAsString(game.getPlayers());
             String gameState = mapper.writeValueAsString(game);
-            return new DoActionResponseDTO(gameState);
+            return new DoActionResponseDTO(errorMessage, gameState, players);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
