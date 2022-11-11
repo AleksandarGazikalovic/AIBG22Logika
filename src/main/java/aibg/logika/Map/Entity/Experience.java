@@ -1,5 +1,6 @@
 package aibg.logika.Map.Entity;
 
+import aibg.logika.Game.GameParameters;
 import aibg.logika.Map.Map;
 import aibg.logika.Map.Tile.Tile;
 import lombok.Getter;
@@ -9,22 +10,23 @@ import java.util.HashMap;
 
 @Setter
 @Getter
-public class Health implements Entity {
-    String type="HEALTH";
+public class Experience implements Entity{
+    String type="EXPERIENCE";
     private static HashMap<Integer, Player> players;
 
     public static void generate(Map map){
         while (true){
             int size = map.getSize();
-            int r = ((int) (Math.random() * (size/2 + size/2) - size/2));
-            int q = ((int) (Math.random() * (size/2 + size/2) - size/2));
-            if(r+q >=-size/2 && r+q <= size/2 && Math.abs(r) <=size/2 && Math.abs(q) <= size/2) {
+            int firstFencePosition = 11; //nema expirience van prvog fence-a
+            int r = ((int) (Math.random() * (firstFencePosition + firstFencePosition) - firstFencePosition));
+            int q = ((int) (Math.random() * (firstFencePosition + firstFencePosition) - firstFencePosition));
+            if(r+q >=-firstFencePosition && r+q <= firstFencePosition && Math.abs(r) <=firstFencePosition && Math.abs(q) <= firstFencePosition) {
                 Tile tile = map.getTile(q, r);
                 if(tile.getEntity() instanceof Empty){
                     //proverava da li su igraci na tom polju
                     for (java.util.Map.Entry<Integer, Player> pair : players.entrySet()) {
                         if (!(pair.getValue().getQ() == q && pair.getValue().getR() == r)){
-                            tile.setEntity(new Health());
+                            tile.setEntity(new Experience());
                             break;
                         }
                     }
@@ -37,7 +39,7 @@ public class Health implements Entity {
     public void stepOn(Player player, Map map, int q, int r) {
         player.setQ(q);
         player.setR(r);
-        player.heal();
+        player.increaseExperience(GameParameters.EXP_GATHER);
         generate(map);
         map.getTile(q,r).setEntity(new Empty());
     }
@@ -49,6 +51,6 @@ public class Health implements Entity {
 
 
     public static void setPlayers(HashMap<Integer, Player> players){
-        Health.players = players;
+        Experience.players = players;
     }
 }
