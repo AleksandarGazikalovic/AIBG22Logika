@@ -58,6 +58,7 @@ public class Game implements Serializable {
         this.players.put(player4.getPlayerIdx(), player4);
         this.hugoBoss = new Boss();
         bossCounter=0;
+        Health.generate(map);
     }
 
     public String update(String action, int playerIdx) {

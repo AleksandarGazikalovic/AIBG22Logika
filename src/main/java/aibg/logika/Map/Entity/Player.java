@@ -178,4 +178,9 @@ public class Player implements Entity {
         }
     }
 
+    public void heal(){
+        health = health + GameParameters.HEAL;
+        if(health > GameParameters.STARTING_HEALTH) health = GameParameters.STARTING_HEALTH;
+    }
+
 }

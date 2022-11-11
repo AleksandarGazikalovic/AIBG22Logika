@@ -20,6 +20,8 @@ public class GameParameters {
     public static final int LEVEL_5_POWER_INCREMENT = 30; //menjati
     public static final int FENCE_HEALTH = 300;
     public static final int BOSS_POWER = 100;
+    public static final int HEAL = 300; //menjati
+
     //revive points
     //shields
 }
