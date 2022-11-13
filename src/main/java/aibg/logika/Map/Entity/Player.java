@@ -30,9 +30,6 @@ public class Player implements Entity {
     protected int deaths = 0;
     protected int score = 0;
     protected boolean trapped=false;
-    @JsonIgnore // Zone kao int od 1 do 3 gde je najdalja zona 3 (pocetna)
-    protected int zone = 3;
-    //ja sam  za to da se izbaci ovo, kao i update zone, i da se samo ubaci fja koja proverava da li je u prvoj zoni jer samo to treba
 
     public Player(Spawnpoint spawnpoint, int playerIdx, Map map) {
         r = spawnpoint.getR();
@@ -42,7 +39,7 @@ public class Player implements Entity {
         this.map = map;
     }
 
-    // todo izbacitri?
+    //ocemo brisati ovo?
     public void move(String direction) {
         int rInitial = r; //stare vrednosti lokacije, kako bi entity postavili na null
         int qInitial = q;
@@ -107,7 +104,6 @@ public class Player implements Entity {
 
     @Override
     public void stepOn(Player player, Map map, int q, int r) {
-        updateZone();
         //illegal ili da ga rani
         player.illegalAction();
     }
@@ -136,19 +132,10 @@ public class Player implements Entity {
         health = GameParameters.STARTING_HEALTH;
     }
 
-
-
-    public void updateZone(){
+    public boolean isZoneOne(){
         int max = abs(max(q, max(r, -r-q)));
-        if( 14 >= max && max <= 11 )
-            zone = 3;
-        else if(max <11 && max >= 5)
-            zone = 2;
-        else if(max < 5 && max>= 2)
-            zone= 1;
+        return ( max < 5 && max>= 2 );
     }
-
-
 
     // treba dodati gde ce se pozivati, mozda posle attack-a ?
     // da li se povecavaju helti ?

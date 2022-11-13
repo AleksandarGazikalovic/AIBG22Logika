@@ -33,6 +33,10 @@ public class Map implements Serializable {
     private HashMap<Integer, Tile> tilemap;
     @JsonIgnore
     private ArrayList<FullTile> fence;
+    @JsonIgnore
+    private Boss hugoBoss;
+    @JsonIgnore
+    private Empty emptyObj;
 
 
     public Map(int n, Path path) throws GameException {
@@ -41,6 +45,8 @@ public class Map implements Serializable {
         tiles = new ArrayList<>();
         wormholes = new ArrayList<>();
         fence = new ArrayList<>();
+        hugoBoss = new Boss();
+        emptyObj=new Empty();
         loadMap(path);
     }
 
@@ -71,7 +77,7 @@ public class Map implements Serializable {
                             currEntity = mapNode.get(counter).get(counter2).get("entity").asText();
                             switch (currEntity){
                                 case "NONE":
-                                    temp = new NormalTile(q,r, new Empty());
+                                    temp = new NormalTile(q,r, emptyObj);
                                     tiles.get(counter).add(temp);
                                     tilemap.put(hash(q,r,-q-r),temp);
                                     break;
@@ -100,10 +106,9 @@ public class Map implements Serializable {
                                     fence.add((FullTile) temp);
                                     break;
                                 case "BOSS":
-                                    temp = new FullTile(q,r, new Boss());
+                                    temp = new FullTile(q,r, hugoBoss);
                                     tiles.get(counter).add(temp);
                                     tilemap.put(hash(q,r,-q-r),temp);
-                                    wormholes.add((FullTile) temp);
                                     break;
                                 default:
                                     throw new GameException("Nepoznat tip ostrava");
@@ -115,6 +120,7 @@ public class Map implements Serializable {
 
                 }
             }
+            connectWormholes();
         }catch(Exception exception){
             exception.printStackTrace();
         }
@@ -124,7 +130,7 @@ public class Map implements Serializable {
         return tilemap.get(hash(q,r,-q-r));
     }
 
-
+//ocemo brisemo ove zakomentarisane
    /* public void setEntity(int r, int q, Entity entity){
         tiles[r+radius][q+radius].setEntity(entity);
     }
@@ -155,6 +161,12 @@ public class Map implements Serializable {
         }
         int x = q*11+r*151+s*257;
         return x;
+    }
+
+    /** Conncects 1st & 3rd and 2nd & 4th loaded wormholes */
+    private void connectWormholes(){
+        ((Wormhole)(wormholes.get(0).getEntity())).connect((Wormhole)(wormholes.get(2).getEntity()));
+        ((Wormhole)(wormholes.get(1).getEntity())).connect((Wormhole)(wormholes.get(3).getEntity()));
     }
 
 }
