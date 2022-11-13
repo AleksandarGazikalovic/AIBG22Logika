@@ -93,6 +93,12 @@ public class GameController {
 
     }
 
+    @PostMapping("/removeGame")
+    public ResponseEntity<DTO> removeGame(@RequestBody RemoveGameRequestDTO dto) {
+        DTO response = gameService.removeGame(dto);
+
+        if(response instanceof RemoveGameResponseDTO) {
+
     @PostMapping("/watchGame")
     public ResponseEntity<DTO> watchGame(@RequestBody WatchGameRequestDTO dto) {
         DTO response = gameService.watchGame(dto);
@@ -102,6 +108,11 @@ public class GameController {
         }else {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
+
+    }
+
+
+
     }
 
 }

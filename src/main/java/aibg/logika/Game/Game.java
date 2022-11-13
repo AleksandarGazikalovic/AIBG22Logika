@@ -117,6 +117,9 @@ public class Game implements Serializable {
                     return "Niste uneli koordinate u pravom formatu";
                 }
             }
+            if (playerIdx == 4) {
+                hugoBoss.turn(map, players);
+            }
         }
 
         return null;
@@ -162,13 +165,15 @@ public class Game implements Serializable {
     }
 
 
-    private Tile calculateCoords(int q, int r, String direction) {
-        int newQ = q + Direction.valueOf(direction).q;
-        int newR = r + Direction.valueOf(direction).r;
+        private Tile calculateCoords ( int q, int r, String direction){
+            int newQ = q + Direction.valueOf(direction).q;
+            int newR = r + Direction.valueOf(direction).r;
 
         return (this.map.getTile(newQ, newR) != null) ? this.map.getTile(newQ, newR) : this.map.getTile(q, r);
 
+        }
     }
+
 
     // pored ovoga, treba proslediti tacne koordinate udara frontu nekako
     private Entity getObstacle(int startQ, int startR, int endQ, int endR) {

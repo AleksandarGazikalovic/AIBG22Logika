@@ -32,6 +32,7 @@ public class Player implements Entity {
     protected boolean trapped=false;
     @JsonIgnore // Zone kao int od 1 do 3 gde je najdalja zona 3 (pocetna)
     protected int zone = 3;
+    //ja sam  za to da se izbaci ovo, kao i update zone, i da se samo ubaci fja koja proverava da li je u prvoj zoni jer samo to treba
 
     public Player(Spawnpoint spawnpoint, int playerIdx, Map map) {
         r = spawnpoint.getR();
@@ -41,7 +42,7 @@ public class Player implements Entity {
         this.map = map;
     }
 
-
+    // todo izbacitri?
     public void move(String direction) {
         int rInitial = r; //stare vrednosti lokacije, kako bi entity postavili na null
         int qInitial = q;
