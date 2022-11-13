@@ -3,6 +3,7 @@ package aibg.logika.service.implementation;
 import aibg.logika.Game.Game;
 import aibg.logika.Map.Entity.Entity;
 import aibg.logika.Game.GameTraining;
+import aibg.logika.Map.Entity.Player;
 import aibg.logika.Map.Map;
 import aibg.logika.dto.*;
 import aibg.logika.serialization.EntityDeserializer;

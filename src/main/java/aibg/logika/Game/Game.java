@@ -176,7 +176,7 @@ public class Game implements Serializable {
         return (this.map.getTile(newQ, newR) != null) ? this.map.getTile(newQ, newR) : this.map.getTile(q, r);
 
         }
-    }
+
 
 
     // pored ovoga, treba proslediti tacne koordinate udara frontu nekako
