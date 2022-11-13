@@ -101,10 +101,8 @@ public class GameServiceImplementation implements GameService {
         try {
             Game game = games.get(dto.getGameId());
             String errorMessage = game.update(dto.getAction(), dto.getPlayerIdx());
-            //mozda izmeniti da vraca svakog igraca odvojeno a ne hashmapu nzm
-            String players=mapper.writeValueAsString(game.getPlayers());
             String gameState = mapper.writeValueAsString(game);
-            return new DoActionResponseDTO(errorMessage, gameState, players);
+            return new DoActionResponseDTO(errorMessage, gameState);
         } catch (JsonProcessingException e) {
             return new ErrorResponseDTO("Greška pri updatovanja gameState-a");
         }
@@ -118,7 +116,6 @@ public class GameServiceImplementation implements GameService {
 
     @Override
     public DTO train(TrainRequestDTO dto) {
-        ObjectMapper mapper = new ObjectMapper();
         // dohvati game, player odradi svoje, potom botovi i krajnje stanje vraca
         // prvo dohvati game
         GameTraining game = trainingGames.get(dto.getGameId());
@@ -129,13 +126,8 @@ public class GameServiceImplementation implements GameService {
         if (game.getGameState() == null){
             return new ErrorResponseDTO("Greška pri igranju trening igre, nesto je poslo po zlu pri azuriranju gameState-a.");
         }
-        try {
-            String players = mapper.writeValueAsString(game.getPlayers());
             String gameState = game.getGameState();
-            return new TrainResponseDTO(errorMessage, gameState, players);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+            return new TrainResponseDTO(errorMessage, gameState);
 
     }
 
@@ -145,13 +137,25 @@ public class GameServiceImplementation implements GameService {
         try {
             Game game = trainingGames.get(gameId);
             String errorMessage = game.update(action, playerIdx);
-            String players = mapper.writeValueAsString(game.getPlayers());
             String gameState = mapper.writeValueAsString(game);
-            return new DoActionResponseDTO(errorMessage, gameState, players);
+            return new DoActionResponseDTO(errorMessage, gameState);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
 
+    }
+
+    //TODO izmeniti tako da mogu da se gledaju i train igre
+    @Override
+    public DTO watchGame(WatchGameRequestDTO dto) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            Game game = games.get(dto.getGameId());
+            String gameState = mapper.writeValueAsString(game);
+            return new WatchGameResponseDTO(gameState);
+        } catch (JsonProcessingException e) {
+            return new ErrorResponseDTO("Greška pri pozivanju sa frontom");
+        }
     }
 
 

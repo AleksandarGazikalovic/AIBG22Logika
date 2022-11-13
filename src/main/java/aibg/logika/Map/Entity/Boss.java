@@ -18,11 +18,16 @@ import static aibg.logika.Game.GameParameters.BOSS_POWER;
 @Getter
 @Setter
 public class Boss implements Entity{
+    String type = "BOSS";
     @JsonIgnore
     int power=BOSS_POWER;
+    @JsonIgnore
     int counter = 0;
+    @JsonIgnore
     private static int randomDelayCounter = 0;
+    @JsonIgnore
     boolean finishedPatern1 = true;
+    @JsonIgnore
     boolean attackedPlayerOnTile = false;
 
     private Tile[] directions = new Tile[]{

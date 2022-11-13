@@ -20,19 +20,15 @@ import java.util.HashMap;
 @NoArgsConstructor
 public class Game implements Serializable {
     protected Map map;
-    @JsonIgnore
     protected Player player1;
     @JsonIgnore
     protected Spawnpoint spawnpoint1 = new Spawnpoint(-7, -7);
-    @JsonIgnore
     protected Player player2;
     @JsonIgnore
     protected Spawnpoint spawnpoint2 = new Spawnpoint(14, -7);
-    @JsonIgnore
     protected Player player3;
     @JsonIgnore
     protected Spawnpoint spawnpoint3 = new Spawnpoint(7, 7);
-    @JsonIgnore
     protected Player player4;
     @JsonIgnore
     protected Spawnpoint spawnpoint4 = new Spawnpoint(-14, 7);
@@ -69,8 +65,6 @@ public class Game implements Serializable {
         if (bossCounter == 4) {
             bossCounter = 0;
             hugoBoss.turn(map, players);
-        } else {
-            bossCounter++;
         }
 
         if (action == null) {
@@ -92,7 +86,7 @@ public class Game implements Serializable {
                 if (!(actQ+actR >= -map.getSize() / 2 && actQ + actR <= map.getSize() / 2
                         && Math.abs(actQ) <= map.getSize() / 2 && Math.abs(actR) <= map.getSize() / 2)) {
                     bossCounter++;
-                    return "Pokušavate predjete granice mape";
+                    return "Pokušavate da predjete granice mape";
                 }
                     //TODO provera da li je u range ta koordinata; ako nije,vraca poslednju koja jeste u tom smeru; to mopzda moze i u okviru obstacle
                     Entity passiveEntity = this.map.getTile(actQ, actR).getEntity();
@@ -179,7 +173,7 @@ public class Game implements Serializable {
         int hexDistance = hexDistance(startQ, startR, endQ, endR);
         double q = startQ, r = startR;
         double s = -q - r;
-        for (int i = 1; i <= hexDistance; i++) {
+        for (int i = 1; i < hexDistance; i++) {
             //a+(b-a)*1/n *i
             q = startQ + (endQ - startQ) * 1.0 * i / hexDistance;
             r = startR + (endR - startR) * 1.0 * i / hexDistance;
