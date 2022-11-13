@@ -1,12 +1,15 @@
 package aibg.logika.service.implementation;
 
 import aibg.logika.Game.Game;
+import aibg.logika.Map.Entity.Entity;
 import aibg.logika.Game.GameTraining;
 import aibg.logika.Map.Map;
 import aibg.logika.dto.*;
+import aibg.logika.serialization.EntityDeserializer;
 import aibg.logika.service.GameService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
@@ -15,6 +18,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.util.TreeMap;
 import java.util.HashMap;
 
 @Service
@@ -25,9 +30,8 @@ public class GameServiceImplementation implements GameService {
     private Logger LOG = LoggerFactory.getLogger(GameService.class);
     private String MAPS_FOLDER = "./maps";
 
-    private HashMap<Integer,Game> games = new HashMap<>();
-    private HashMap<Integer, GameTraining> trainingGames = new HashMap<>();
-
+    private TreeMap<Integer,Game> games = new TreeMap<>();
+    private TreeMap<Integer, GameTraining> trainingGames = new TreeMap<>();
 
     /* treba videti kako prihvatati različite mape */
     @Override
@@ -157,6 +161,44 @@ public class GameServiceImplementation implements GameService {
             return new ErrorResponseDTO("Greška pri pozivanju sa frontom");
         }
     }
+
+
+    //treba se pozove odakle god odlucimo da zavrsimo igru
+    /** Removes game from list of games, makes that ID available again, removes players from game and sets their gameID field to -1
+     */
+    private void endGame(int gameID){
+        Game game = games.get(gameID);
+        for(Player player : game.getPlayers().values()){
+            player.setPlayerIdx(-1);
+        }
+        game.setPlayers(null);
+        games.remove(gameID);
+    }
+
+    private void endGameTraining(int gameID){
+        Game game = trainingGames.get(gameID);
+        for(Player player : game.getPlayers().values()){
+            player.setPlayerIdx(-1);
+        }
+        game.setPlayers(null);
+        trainingGames.remove(gameID);
+    }
+
+    public DTO removeGame(RemoveGameRequestDTO dto){
+        try {
+            if (dto.getGameType() == "Training") {
+                endGameTraining(dto.getGameID());
+            } else {
+                endGame(dto.getGameID());
+            }
+            return new RemoveGameResponseDTO(true);
+        }catch(Exception e){
+            return new RemoveGameResponseDTO(false);
+        }
+
+    }
+
+
 
 
 }
