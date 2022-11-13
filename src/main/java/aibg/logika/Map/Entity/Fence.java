@@ -24,7 +24,8 @@ public class Fence implements Entity{
         if(attacker instanceof Player){
             health-= ((Player) attacker).getPower();
             if(health<=0){//uklanja sa mape
-                map.getTile(q,r).setEntity(map.getEmptyObj()); // TODO ne mora new, moze da se koristi jedan Empty objekat za sva polja
+                map.getTile(q,r).setTileType("NORMAL");
+                map.getTile(q,r).setEntity(map.getEmptyObj());
             }
         }//ignorise napade boss-a
     }

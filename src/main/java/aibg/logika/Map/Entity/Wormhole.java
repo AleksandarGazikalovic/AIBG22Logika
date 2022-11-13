@@ -13,16 +13,17 @@ import lombok.Setter;
 public class Wormhole implements Entity {
 
     String type = "WORMHOLE";
+    int id;
 
     Wormhole connectedWormhole = null; // Sa kojom crvotocinom je povezana
     int q,r;
 
-   /*public Wormhole(int r, int q) {
-        super(r, q);
-    }*/
+   public Wormhole(int q, int r,int id) {
+       this.q=q;
+       this.r=r;
+       this.id=id;
+   }
 
-
-    //TODO ovo mozda nije potrebno
     //povezuje ovu crvotocinu sa drugom, potrebno je SAMO JEDNU povezati
     public void connect(Wormhole second){
         if(connectedWormhole == null){
@@ -33,11 +34,13 @@ public class Wormhole implements Entity {
 
     @Override
     public void stepOn(Player player, Map map, int q, int r) {
-
+        int newQ = connectedWormhole.getQ() + (q - player.getQ());
+        int newR = connectedWormhole.getR() + (r - player.getR());
+        map.getTile(newQ,newR).getEntity().stepOn(player,map,newQ,newR);
     }
 
     @Override
     public void attacked(Entity attacker, Map map, int q, int r) {
-
+        if(attacker instanceof Player) ((Player)attacker).illegalAction();
     }
 }

@@ -2,8 +2,6 @@ package aibg.logika.Map;
 
 import aibg.logika.Game.GameException;
 import aibg.logika.Map.Entity.*;
-import aibg.logika.Map.Tile.FullTile;
-import aibg.logika.Map.Tile.NormalTile;
 import aibg.logika.Map.Tile.Tile;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -28,11 +26,11 @@ public class Map implements Serializable {
     int size;
     private ArrayList<ArrayList<Tile>> tiles;
     @JsonIgnore
-    private ArrayList<FullTile> wormholes;
+    private ArrayList<Tile> wormholes;
     @JsonIgnore
     private HashMap<Integer, Tile> tilemap;
     @JsonIgnore
-    private ArrayList<FullTile> fence;
+    private ArrayList<Tile> fence;
     @JsonIgnore
     private Boss hugoBoss;
     @JsonIgnore
@@ -77,20 +75,21 @@ public class Map implements Serializable {
                             currEntity = mapNode.get(counter).get(counter2).get("entity").asText();
                             switch (currEntity){
                                 case "NONE":
-                                    temp = new NormalTile(q,r, emptyObj);
+                                    temp = new Tile(q,r, "NORMAL", emptyObj);
                                     tiles.get(counter).add(temp);
                                     tilemap.put(hash(q,r,-q-r),temp);
                                     break;
                                 case "BLACKHOLE":
-                                    temp = new NormalTile(q,r, new Blackhole());
+                                    temp = new Tile(q,r, "NORMAL",new Blackhole());
                                     tiles.get(counter).add(temp);
                                     tilemap.put(hash(q,r,-q-r),temp);
                                     break;
                                 case "WORMHOLE":
-                                    temp = new FullTile(q,r, new Wormhole());
+                                    int id = mapNode.get(counter).get(counter2).get("id").asInt();
+                                    temp = new Tile(q,r, "FULL", new Wormhole(q,r,id));
                                     tiles.get(counter).add(temp);
                                     tilemap.put(hash(q,r,-q-r),temp);
-                                    wormholes.add((FullTile) temp);
+                                    wormholes.add((Tile) temp);
                                     break;
                                 default:
                                     throw new GameException("Nepostojeca oznaka entiteta pri inicijalizaciji polja mape (" + q + ","+ r+ ")");
@@ -100,13 +99,13 @@ public class Map implements Serializable {
                             currEntity = mapNode.get(counter).get(counter2).get("entity").asText();
                             switch (currEntity){
                                 case "FENCE":
-                                    temp = new FullTile(q,r, new Fence());
+                                    temp = new Tile(q,r, "FULL",new Fence());
                                     tiles.get(counter).add(temp);
                                     tilemap.put(hash(q,r,-q-r),temp);
-                                    fence.add((FullTile) temp);
+                                    fence.add((Tile) temp);
                                     break;
                                 case "BOSS":
-                                    temp = new FullTile(q,r, hugoBoss);
+                                    temp = new Tile(q, r, "FULL",hugoBoss);
                                     tiles.get(counter).add(temp);
                                     tilemap.put(hash(q,r,-q-r),temp);
                                     break;
@@ -130,25 +129,6 @@ public class Map implements Serializable {
         return tilemap.get(hash(q,r,-q-r));
     }
 
-//ocemo brisemo ove zakomentarisane
-   /* public void setEntity(int r, int q, Entity entity){
-        tiles[r+radius][q+radius].setEntity(entity);
-    }
-
-    // Proverava da li je polje zauzeto i da li je outOfBound
-    public boolean isFree(int r, int q){
-        if(!(q+r>=-radius && q+r<=radius && Math.abs(r) <=radius && Math.abs(q) <= radius)) return false;
-        return tiles[r+radius][q+radius].isFree();
-    }
-
-    public boolean isWormhole(int r, int q){
-        if(!(q+r>=-radius && q+r<=radius && Math.abs(r) <=radius && Math.abs(q) <= radius)) return false; // TODO zbog if u player.move
-        return (tiles[r+radius][q+radius].entity() instanceof Wormhole);
-    }*/
-
-
-
-
     private int hash(int q, int r, int s){
         if(abs(q) == 1){
             q=q*17;
@@ -165,8 +145,14 @@ public class Map implements Serializable {
 
     /** Conncects 1st & 3rd and 2nd & 4th loaded wormholes */
     private void connectWormholes(){
-        ((Wormhole)(wormholes.get(0).getEntity())).connect((Wormhole)(wormholes.get(2).getEntity()));
-        ((Wormhole)(wormholes.get(1).getEntity())).connect((Wormhole)(wormholes.get(3).getEntity()));
+        for(int i=0;i<wormholes.size();i++){
+            for(int j=i+1;j<wormholes.size();j++){
+                if( ((Wormhole)(wormholes.get(i).getEntity())).getId()==((Wormhole)(wormholes.get(j).getEntity())).getId() ){
+                    ((Wormhole)(wormholes.get(i).getEntity())).connect((Wormhole)(wormholes.get(j).getEntity()));
+                    break;
+                }
+            }
+        }
     }
 
 }
