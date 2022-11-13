@@ -9,11 +9,9 @@ public class TrainResponseDTO extends DTO{
 
     private String message;
     private String gameState;
-    private String players;
 
-    public TrainResponseDTO(String message, String gameState, String players) {
+    public TrainResponseDTO(String message, String gameState) {
         this.message = message;
         this.gameState = gameState;
-        this.players = players;
     }
 }

@@ -17,4 +17,6 @@ public interface GameService {
     DTO train(TrainRequestDTO dto);
 
     DTO doActionTrain(Integer gameId, Integer playerIdx, String action);
+
+    DTO watchGame(WatchGameRequestDTO dto);
 }
