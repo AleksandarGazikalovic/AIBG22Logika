@@ -53,8 +53,8 @@ public class Game implements Serializable {
         this.players.put(player2.getPlayerIdx(), player2);
         this.players.put(player3.getPlayerIdx(), player3);
         this.players.put(player4.getPlayerIdx(), player4);
+        this.hugoBoss = map.getHugoBoss();
         scoreBoard = new ScoreBoard(player1, player2, player3, player4);
-        this.hugoBoss = new Boss();
         bossCounter=0;
     }
 

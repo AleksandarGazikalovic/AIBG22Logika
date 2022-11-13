@@ -52,7 +52,7 @@ public class GameTraining extends Game{
         this.player2 = new TrainingBot(spawnpoint2, 2, this.map, this.gameService);
         this.player3 = new TrainingBot(spawnpoint3, 3, this.map, this.gameService);
         this.player4 = new TrainingBot(spawnpoint4, 4, this.map, this.gameService);
-        this.hugoBoss = new Boss();
+        this.hugoBoss = map.getHugoBoss();
         switch(playerIdx) {
             case 1:
                 this.player1 = new Player(spawnpoint1, 1, this.map);
