@@ -38,6 +38,7 @@ public class Game implements Serializable {
     protected Player winner;
     @JsonIgnore
     protected HashMap<Integer, Player> players;
+    protected ScoreBoard scoreBoard;
     @JsonIgnore
     protected int bossCounter;
 
@@ -52,6 +53,7 @@ public class Game implements Serializable {
         this.players.put(player2.getPlayerIdx(), player2);
         this.players.put(player3.getPlayerIdx(), player3);
         this.players.put(player4.getPlayerIdx(), player4);
+        scoreBoard = new ScoreBoard(player1, player2, player3, player4);
         this.hugoBoss = new Boss();
         bossCounter=0;
     }
