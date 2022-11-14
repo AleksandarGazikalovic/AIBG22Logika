@@ -1,5 +1,6 @@
 package aibg.logika.Map.Entity;
 
+import aibg.logika.Game.Game;
 import aibg.logika.Game.GameParameters;
 import aibg.logika.Map.Map;
 import aibg.logika.Map.Tile.Tile;
@@ -12,10 +13,10 @@ import java.util.HashMap;
 @Getter
 public class Experience implements Entity{
     String type="EXPERIENCE";
-    private static HashMap<Integer, Player> players;
 
-    public static void generate(Map map){
+    public static void generate(Map map, HashMap<Integer, Player> players){
         while (true){
+            boolean playerSpotted = false;
             int size = map.getSize();
             int firstFencePosition = 11; //nema expirience van prvog fence-a
             int r = ((int) (Math.random() * (firstFencePosition + firstFencePosition) - firstFencePosition));
@@ -26,9 +27,13 @@ public class Experience implements Entity{
                     //proverava da li su igraci na tom polju
                     for (java.util.Map.Entry<Integer, Player> pair : players.entrySet()) {
                         if (!(pair.getValue().getQ() == q && pair.getValue().getR() == r)){
-                            tile.setEntity(new Experience());
+                            playerSpotted = true;
                             break;
                         }
+                    }
+                    if(!playerSpotted) {
+                        tile.setEntity(new Health());
+                        break;
                     }
                 }
             }
@@ -36,21 +41,18 @@ public class Experience implements Entity{
     }
 
     @Override //TODO
-    public void stepOn(Player player, Map map, int q, int r) {
+    public void stepOn(Player player, Game game, int q, int r) {
         player.setQ(q);
         player.setR(r);
         player.increaseExperience(GameParameters.EXP_GATHER);
-        generate(map);
-        map.getTile(q,r).setEntity(new Empty());
+        generate(game.getMap(), game.getPlayers());
+        game.getMap().getTile(q,r).setEntity(game.getMap().getEmptyObj());
     }
 
     @Override //TODO
-    public void attacked(Entity attacker, Map map, int q, int r) {
+    public void attacked(Entity attacker, Game game, int q, int r) {
 
     }
 
 
-    public static void setPlayers(HashMap<Integer, Player> players){
-        Experience.players = players;
-    }
 }

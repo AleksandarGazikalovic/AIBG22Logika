@@ -1,5 +1,6 @@
 package aibg.logika.Map.Entity;
 
+import aibg.logika.Game.Game;
 import aibg.logika.Game.GameParameters;
 import aibg.logika.Map.Map;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -39,56 +40,6 @@ public class Player implements Entity {
         this.map = map;
     }
 
-    //ocemo brisati ovo?
-    public void move(String direction) {
-        int rInitial = r; //stare vrednosti lokacije, kako bi entity postavili na null
-        int qInitial = q;
-        switch (direction) {
-            case "nw":
-                r--;
-                break;
-            case "ne":
-                q++;
-                r--;
-                break;
-            case "w":
-                q--;
-                break;
-            case "e":
-                q++;
-                break;
-            case "sw":
-                q--;
-                r++;
-                break;
-            case "se":
-                r++;
-                break;
-        }
-
-        // provera da li je igrac usao  wormhole
-        /*if(map.isWormhole(r, q)){
-            if(map.isFree(-rInitial, -qInitial)){
-                r =-rInitial;
-                q = -qInitial;
-            }else {
-                r = rInitial; // ako je polje zauzeto samo cemo vratiti igraca gde se nalazio
-                q = qInitial;
-            }
-        } else if(!(map.isFree(r,q))){
-            r = rInitial;
-            q = qInitial;
-        }
-
-        map.setEntity(rInitial, qInitial, null); //stara lokacija
-        map.setEntity(r, q, this); // nova lokacija
-
-
-        if(r==rInitial && q==qInitial){
-            System.out.println("Polje je zauzeto ili je outOfBound");
-        }*/
-    }
-
     public void increaseExperience(int inc){
         experience+=inc;
         levelUp();
@@ -103,13 +54,13 @@ public class Player implements Entity {
 
 
     @Override
-    public void stepOn(Player player, Map map, int q, int r) {
+    public void stepOn(Player player, Game game, int q, int r) {
         //illegal ili da ga rani
         player.illegalAction();
     }
 
     @Override
-    public void attacked(Entity attacker, Map map, int q, int r) {
+    public void attacked(Entity attacker, Game game, int q, int r) {
         if(attacker instanceof Player) {
             health-= ((Player) attacker).getPower();
             if(health<=0){

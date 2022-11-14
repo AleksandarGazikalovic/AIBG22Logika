@@ -18,10 +18,11 @@ public class Tile{
 
     private String tileType;
 
-    public Tile(int q, int r, Entity entity){
+    public Tile(int q, int r, String tileType, Entity entity){
         this.r = r;
         this.q = q;
         this.entity = entity;
+        this.tileType = tileType;
     }
 
     public Tile(int q, int r) {

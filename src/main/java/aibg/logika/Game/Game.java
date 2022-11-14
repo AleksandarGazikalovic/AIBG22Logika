@@ -4,8 +4,6 @@ import aibg.logika.Action.Direction;
 import aibg.logika.Map.Entity.*;
 import aibg.logika.Map.Map;
 import aibg.logika.Map.Tile.Tile;
-import aibg.logika.dto.DTO;
-import aibg.logika.dto.ErrorResponseDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -56,10 +54,8 @@ public class Game implements Serializable {
         this.hugoBoss = map.getHugoBoss();
         scoreBoard = new ScoreBoard(player1, player2, player3, player4);
         bossCounter=0;
-        Health.setPlayers(players);
-        Health.generate(map);
-        Experience.setPlayers(players);
-        Experience.generate(map);
+        Health.generate(this.map, this.players);
+        Experience.generate(this.map,this.players);
     }
 
     public String update(String action, int playerIdx) {
@@ -70,7 +66,7 @@ public class Game implements Serializable {
 
         if (bossCounter == 4) {
             bossCounter = 0;
-            hugoBoss.turn(map, players);
+            hugoBoss.turn(this, players);
         }
 
         if (action == null) {
@@ -122,7 +118,7 @@ public class Game implements Serializable {
                 }
             }
             if (playerIdx == 4) {
-                hugoBoss.turn(map, players);
+                hugoBoss.turn(this, players);
             }
         }
 
@@ -133,7 +129,7 @@ public class Game implements Serializable {
         if (hexDistance(actQ, actR, active.getQ(), active.getR()) == GameParameters.MOVE_RANGE) {
             int oldQ= active.getQ();
             int oldR= active.getR();
-            passiveEntity.stepOn(active, this.map, actQ, actR);
+            passiveEntity.stepOn(active, this, actQ, actR);
             bossCounter++;
             if(oldQ== active.getQ() && oldR== active.getR()) {
                 return "Pokušali ste da se pomerite na polje koje je tipa FULL";
@@ -151,15 +147,15 @@ public class Game implements Serializable {
             Entity obstacle = getObstacle(active.getQ(), active.getR(), actQ, actR);
             bossCounter++;
             if(!(passiveEntity instanceof Player || passiveEntity instanceof Boss)) {
-                passiveEntity.attacked(active, this.map, actQ, actR);
+                passiveEntity.attacked(active,this, actQ, actR);
                 return "Pokušavate da napadnete polje koje nije ni igrač ni boss";
             }
             if (obstacle != null) {
                 passiveEntity = obstacle;
-                passiveEntity.attacked(active, this.map, actQ, actR);
+                passiveEntity.attacked(active, this, actQ, actR);
                 return "Napad do koordinate koju ste pokušali da napadnete je imao prepreku koja je pogodjena";
             }
-            passiveEntity.attacked(active, this.map, actQ, actR);
+            passiveEntity.attacked(active,this, actQ, actR);
         } else {
             bossCounter++;
             active.illegalAction();
@@ -176,7 +172,7 @@ public class Game implements Serializable {
         return (this.map.getTile(newQ, newR) != null) ? this.map.getTile(newQ, newR) : this.map.getTile(q, r);
 
         }
-    }
+
 
 
     // pored ovoga, treba proslediti tacne koordinate udara frontu nekako

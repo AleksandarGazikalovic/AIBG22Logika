@@ -1,5 +1,6 @@
 package aibg.logika.Map.Entity;
 
+import aibg.logika.Game.Game;
 import aibg.logika.Map.Map;
 import aibg.logika.Map.Tile.Tile;
 import lombok.Getter;
@@ -11,10 +12,10 @@ import java.util.HashMap;
 @Getter
 public class Health implements Entity {
     String type="HEALTH";
-    private static HashMap<Integer, Player> players;
 
-    public static void generate(Map map){
+    public static void generate(Map map, HashMap<Integer, Player> players){
         while (true){
+            boolean playerSpotted = false;
             int size = map.getSize();
             int r = ((int) (Math.random() * (size/2 + size/2) - size/2));
             int q = ((int) (Math.random() * (size/2 + size/2) - size/2));
@@ -23,10 +24,14 @@ public class Health implements Entity {
                 if(tile.getEntity() instanceof Empty){
                     //proverava da li su igraci na tom polju
                     for (java.util.Map.Entry<Integer, Player> pair : players.entrySet()) {
-                        if (!(pair.getValue().getQ() == q && pair.getValue().getR() == r)){
-                            tile.setEntity(new Health());
+                        if (pair.getValue().getQ() == q && pair.getValue().getR() == r){
+                            playerSpotted = true;
                             break;
                         }
+                    }
+                    if(!playerSpotted) {
+                        tile.setEntity(new Health());
+                        break;
                     }
                 }
             }
@@ -34,21 +39,16 @@ public class Health implements Entity {
     }
 
     @Override //TODO
-    public void stepOn(Player player, Map map, int q, int r) {
+    public void stepOn(Player player, Game game, int q, int r) {
         player.setQ(q);
         player.setR(r);
         player.heal();
-        generate(map);
-        map.getTile(q,r).setEntity(new Empty());
+        generate(game.getMap(), game.getPlayers());
+        game.getMap().getTile(q,r).setEntity(game.getMap().getEmptyObj());
     }
 
     @Override //TODO
-    public void attacked(Entity attacker, Map map, int q, int r) {
+    public void attacked(Entity attacker, Game game, int q, int r) {
 
-    }
-
-
-    public static void setPlayers(HashMap<Integer, Player> players){
-        Health.players = players;
     }
 }

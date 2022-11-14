@@ -21,26 +21,28 @@ public class GameController {
     private GameService gameService;
 
     @Autowired
-    public GameController(GameService gameService) {this.gameService = gameService;}
+    public GameController(GameService gameService) {
+        this.gameService = gameService;
+    }
 
-    @PostMapping ("/getStartGameState")
+    @PostMapping("/getStartGameState")
     public ResponseEntity<DTO> startGameState(@RequestBody GameStateRequestDTO dto) {
         DTO response = gameService.startGameState(dto);
 
-        if(response instanceof GameStateResponseDTO) {
+        if (response instanceof GameStateResponseDTO) {
             return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
-        }else {
+        } else {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
     }
 
-    @PostMapping ("/getStartTrainGameState")
+    @PostMapping("/getStartTrainGameState")
     public ResponseEntity<DTO> startTrainGameState(@RequestBody TrainGameStateRequestDTO dto) {
         DTO response = gameService.startTrainGameState(dto);
 
-        if(response instanceof TrainGameStateResponseDTO) {
+        if (response instanceof TrainGameStateResponseDTO) {
             return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
-        }else {
+        } else {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
     }
@@ -49,9 +51,9 @@ public class GameController {
     public ResponseEntity<DTO> playerView(@RequestBody PlayerViewRequestDTO dto) {
         DTO response = gameService.playerView(dto);
 
-        if(response instanceof PlayerViewResponseDTO) {
+        if (response instanceof PlayerViewResponseDTO) {
             return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
-        }else {
+        } else {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
     }
@@ -60,9 +62,9 @@ public class GameController {
     public ResponseEntity<DTO> doAction(@RequestBody DoActionRequestDTO dto) {
         DTO response = gameService.doAction(dto);
 
-        if(response instanceof DoActionResponseDTO) {
+        if (response instanceof DoActionResponseDTO) {
             return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
-        }else {
+        } else {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
@@ -72,9 +74,9 @@ public class GameController {
     public ResponseEntity<DTO> removePlayer(@RequestBody RemovePlayerRequestDTO dto) {
         DTO response = gameService.removePlayer(dto);
 
-        if(response instanceof RemovePlayerResponseDTO) {
+        if (response instanceof RemovePlayerResponseDTO) {
             return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
-        }else {
+        } else {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
@@ -85,9 +87,9 @@ public class GameController {
     public ResponseEntity<DTO> train(@RequestBody TrainRequestDTO dto) {
         DTO response = gameService.train(dto);
 
-        if(response instanceof TrainResponseDTO) {
+        if (response instanceof TrainResponseDTO) {
             return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
-        }else {
+        } else {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
@@ -97,22 +99,23 @@ public class GameController {
     public ResponseEntity<DTO> removeGame(@RequestBody RemoveGameRequestDTO dto) {
         DTO response = gameService.removeGame(dto);
 
-        if(response instanceof RemoveGameResponseDTO) {
+        if (response instanceof RemoveGameResponseDTO) {
+            return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+        } else {
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+    }
 
     @PostMapping("/watchGame")
     public ResponseEntity<DTO> watchGame(@RequestBody WatchGameRequestDTO dto) {
         DTO response = gameService.watchGame(dto);
 
-        if(response instanceof WatchGameResponseDTO) {
+        if (response instanceof WatchGameResponseDTO) {
             return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
-        }else {
+        } else {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
     }
-
-
-
-    }
-
 }
+

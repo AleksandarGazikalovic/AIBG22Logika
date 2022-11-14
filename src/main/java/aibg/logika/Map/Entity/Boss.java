@@ -1,6 +1,7 @@
 package aibg.logika.Map.Entity;
 
 import aibg.logika.Action.Direction;
+import aibg.logika.Game.Game;
 import aibg.logika.Map.Map;
 import aibg.logika.Map.Tile.Tile;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -36,13 +37,13 @@ public class Boss implements Entity{
             new Tile(Direction.NE.q, Direction.NE.r )};
 
     @Override
-    public void stepOn(Player player, Map map, int q, int r) {
+    public void stepOn(Player player, Game game, int q, int r) {
         player.illegalAction();
     }
 
 
     @Override
-    public void attacked(Entity attacker, Map map, int q, int r) {
+    public void attacked(Entity attacker, Game game, int q, int r) {
         // TODO povecati exp i score nekim smislenim brojem :)
         ((Player)attacker).increaseScore(((Player) attacker).getPower());
         ((Player)attacker).increaseExperience(((Player) attacker).getPower());
@@ -54,20 +55,20 @@ public class Boss implements Entity{
     }
 
 
-    public void turn(Map map, HashMap<Integer, Player> players){
-        attackZoneOne(map, players);
-        attackZoneTwo(map, players);
+    public void turn(Game game, HashMap<Integer, Player> players){
+        attackZoneOne(game, players);
+        attackZoneTwo(game, players);
     }
-    public void attackZoneOne(Map map, HashMap<Integer, Player> players){
+    public void attackZoneOne(Game game, HashMap<Integer, Player> players){
         // Attacks all the players in the first zone.
         for(Player player : players.values()){
             if(player.isZoneOne()){
-                player.attacked(this,map,player.q, player.r);
+                player.attacked(this, game, player.q, player.r);
             }
         }
     }
 
-    public void attackZoneTwo(Map map, HashMap<Integer, Player> players){
+    public void attackZoneTwo(Game game, HashMap<Integer, Player> players){
         //Ako je randomDelayCounter 0, radi se patern odredjen vrednosti promenljive pattern; u samom paternu, kada se zavrsi, se
         //postavljaju nove vrednosti promenljive randomDelayCounter i inkrementira pattern promenljiva
 
@@ -77,11 +78,11 @@ public class Boss implements Entity{
                     pattern++; //trenutno nema nultog paterna
                     break;
                 case 1:
-                    Tile start = map.getTile(-6, -2);    //jesu ovo pocetne
-                    patern1(map, players, start);
+                    Tile start = game.getMap().getTile(-6, -2);    //jesu ovo pocetne
+                    patern1(game, players, start);
                     break;
                 case 2:
-                    patern2(map, players);
+                    patern2(game, players);
                     break;
                 default:
                     pattern = 1;   //kad prodje sve da pocne od 1 opet
@@ -90,7 +91,7 @@ public class Boss implements Entity{
             randomDelayCounter--;
     }
 
-    public void patern1(Map map, HashMap<Integer, Player> players, Tile start){
+    public void patern1(Game game, HashMap<Integer, Player> players, Tile start){
 
         start.setQ(start.getQ() + counter);
         start.setR(start.getR() - counter);
@@ -98,11 +99,11 @@ public class Boss implements Entity{
 
         ArrayList<Tile> allAttackedTiles = new ArrayList<Tile>();
         allAttackedTiles.add(start);
-        allAttackedTiles.add(symmetryPerDiagonal(map,start));
-        allAttackedTiles.add(symmetryPerY(map,start));
-        allAttackedTiles.add(symmetryPerY(map,symmetryPerDiagonal(map,start)));
+        allAttackedTiles.add(symmetryPerDiagonal(game.getMap(),start));
+        allAttackedTiles.add(symmetryPerY(game.getMap(),start));
+        allAttackedTiles.add(symmetryPerY(game.getMap(),symmetryPerDiagonal(game.getMap(),start)));
 
-        attackTiles(map,players,allAttackedTiles);
+        attackTiles(game,players,allAttackedTiles);
 
         if(counter == 4) {  //valjda treba 7 polja da se predje, ne 4? //granica bi trebalo nekako automatski da se odredi na osnovu pocetne koord
             pattern++;
@@ -113,31 +114,31 @@ public class Boss implements Entity{
     }
 
     //prsten napad
-    public void patern2(Map map, HashMap<Integer, Player> players){
+    public void patern2(Game game, HashMap<Integer, Player> players){
 
-        ArrayList<Tile> ring=cube_ring(map,6);
+        ArrayList<Tile> ring=cube_ring(game.getMap(),6);
 
-        attackTiles(map,players,ring);
+        attackTiles(game,players,ring);
 
         pattern++;
         randomDelayCounter=Random();
     }
 
     /** Attacks tiles forwarded as parameter allAttackedTiles */
-    private void attackTiles(Map map, HashMap<Integer, Player> players,ArrayList<Tile> allAttackedTiles){
+    private void attackTiles(Game game, HashMap<Integer, Player> players,ArrayList<Tile> allAttackedTiles){
         boolean attackedPlayerOnTile = false;
 
         for (Tile attackedTile : allAttackedTiles){
             if(attackedTile.getEntity() instanceof Empty || attackedTile.getEntity() instanceof Blackhole){     //iskreno izbacio bih ovaj if svakako, ako nisu polja ovog tipa ignorisace napad
                 for(Player player : players.values()){
                     if(player.getQ() == attackedTile.getQ() && player.getR() == attackedTile.getR()) {
-                        player.attacked(this, map, player.getQ(), player.getR());
+                        player.attacked(this, game, player.getQ(), player.getR());
                         attackedPlayerOnTile = true;
                         break;
                     }
                 }
                 if(attackedPlayerOnTile != true)
-                    attackedTile.getEntity().attacked(this, map, attackedTile.getQ(), attackedTile.getR());
+                    attackedTile.getEntity().attacked(this, game, attackedTile.getQ(), attackedTile.getR());
                 else
                     attackedPlayerOnTile = false;
             }
