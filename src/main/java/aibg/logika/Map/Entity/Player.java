@@ -67,19 +67,36 @@ public class Player implements Entity {
                 deaths++;
                 ((Player)attacker).increaseExperience(100);
                 ((Player)attacker).kills++;
-                respawn();
+                respawn(game);
             }
         } else if (attacker instanceof Boss) {
             health-= ((Boss) attacker).getPower();
             if(health<=0){
-                respawn();
+                respawn(game);
             }
         }
     }
 
-    public void respawn(){
-        r = spawnpoint.getR();
-        q = spawnpoint.getQ();
+    public void respawn(Game game){
+        Spawnpoint sp = this.spawnpoint;
+        boolean occupied = false;
+        int occCnt = 0;
+        do {
+            for (Player player : game.getPlayers().values()) {
+                if (player.getPlayerIdx() == this.playerIdx)
+                    continue;
+                if (player.getQ() == sp.getQ() && player.getR() == sp.getR()) {
+                    sp.setR(spawnpoint.getR() + (occupied?-1:1)*(sp.getR()<0?1:-1));   //prvo ce da proba da ga stavi na polje iznad, drugi put na polje ispod
+                    sp.setQ(spawnpoint.getQ() + (occupied?-1:1)*(sp.getQ()>0?1:-1)*(sp.getR()*sp.getQ()>0?1:0)); //nmg da objasnim imam nacrtano u beleskama, pitaj
+                    occupied = true;
+                    occCnt++;
+                    break;
+                }
+            }
+        }while(occupied && occCnt<2);
+
+        r = sp.getR();
+        q = sp.getQ();
         health = GameParameters.STARTING_HEALTH;
     }
 
