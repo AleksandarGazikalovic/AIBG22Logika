@@ -1,12 +1,16 @@
 package aibg.logika.Game;
 
 import aibg.logika.Map.Entity.Player;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 
+@Getter
+@Setter
 public class ScoreBoard {
 
     Player players[] = new Player[4];

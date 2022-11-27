@@ -2,6 +2,7 @@ package aibg.logika.Map.Entity;
 
 import aibg.logika.Game.Game;
 import aibg.logika.Map.Map;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,6 +17,7 @@ public class Wormhole implements Entity {
     String type = "WORMHOLE";
     int id;
 
+    @JsonIgnore
     Wormhole connectedWormhole = null; // Sa kojom crvotocinom je povezana
     int q,r;
 
@@ -28,7 +30,7 @@ public class Wormhole implements Entity {
     //povezuje ovu crvotocinu sa drugom, potrebno je SAMO JEDNU povezati
     public void connect(Wormhole second){
         if(connectedWormhole == null){
-            connectedWormhole = second;
+            this.setConnectedWormhole(second);
             second.connect(this);
         }
     }
@@ -37,7 +39,7 @@ public class Wormhole implements Entity {
     public void stepOn(Player player, Game game, int q, int r) {
         int newQ = connectedWormhole.getQ() + (q - player.getQ());
         int newR = connectedWormhole.getR() + (r - player.getR());
-        map.getTile(newQ,newR).getEntity().stepOn(player,map,newQ,newR);
+        game.getMap().getTile(newQ,newR).getEntity().stepOn(player,game,newQ,newR);
     }
 
     @Override

@@ -26,13 +26,13 @@ public class Experience implements Entity{
                 if(tile.getEntity() instanceof Empty){
                     //proverava da li su igraci na tom polju
                     for (java.util.Map.Entry<Integer, Player> pair : players.entrySet()) {
-                        if (!(pair.getValue().getQ() == q && pair.getValue().getR() == r)){
+                        if (pair.getValue().getQ() == q && pair.getValue().getR() == r){
                             playerSpotted = true;
                             break;
                         }
                     }
                     if(!playerSpotted) {
-                        tile.setEntity(new Health());
+                        tile.setEntity(new Experience());
                         break;
                     }
                 }
