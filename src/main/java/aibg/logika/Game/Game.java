@@ -31,8 +31,12 @@ public class Game implements Serializable {
     @JsonIgnore
     protected Spawnpoint spawnpoint4 = new Spawnpoint(-14, 7);
 
-    @JsonIgnore
+
     protected Boss hugoBoss;
+
+    @JsonIgnore
+    protected String playerAction;
+
     protected Player winner;
     @JsonIgnore
     protected HashMap<Integer, Player> players;
@@ -61,6 +65,7 @@ public class Game implements Serializable {
     }
 
     public String update(String action, int playerIdx) {
+        hugoBoss.setBossAction(false); //uvek je false, osim u potezu kad boss odigra svoj napad
         if (this.winner != null) {
             errorMessage = "Game is finished!";
         }
@@ -148,17 +153,15 @@ public class Game implements Serializable {
 
     private String checkAttack(Player active, int actQ, int actR, Entity passiveEntity) {
         if (hexDistance(actQ, actR, active.getQ(), active.getR()) <= GameParameters.RANGE) {
-            Entity obstacle = getObstacle(active.getQ(), active.getR(), actQ, actR);
             bossCounter++;
             if(!(passiveEntity instanceof Player || passiveEntity instanceof Boss || passiveEntity instanceof Fence)) {
                 passiveEntity.attacked(active,this, actQ, actR);
                 return "Pokušavate da napadnete polje koje nije namenjeno za napad";
             }
-            if (obstacle != null) {
+            Entity obstacle = getObstacle(active.getQ(), active.getR(), actQ, actR); //ako ima obstacle, postavlja novi playerAction
+            if (obstacle != null)
                 passiveEntity = obstacle;
-                passiveEntity.attacked(active, this, actQ, actR);
-                return "Napad do koordinate koju ste pokušali da napadnete je imao prepreku koja je pogodjena";
-            }
+            else playerAction = "attack," + actQ + "," + actR; //ako nema obstacle ni problema stavlja stari
             passiveEntity.attacked(active,this, actQ, actR);
         } else {
             bossCounter++;
@@ -206,10 +209,12 @@ public class Game implements Serializable {
             }
             for (Player player : players.values()) {
                 if (player.getQ() == cordQ && player.getR() == cordR) {
+                    playerAction = "attack," + cordQ + "," + cordR;
                     return player;
                 }
             }
-            if (!(map.getTile((int) q, (int) r).getEntity() instanceof Empty)) {
+            if (!(map.getTile(cordQ, cordR).getEntity() instanceof Empty)) { // if (!(map.getTile((int) q, (int) r).getEntity() instanceof Empty))
+                playerAction = "attack," + cordQ + "," + cordR;
                 return map.getTile((int) q, (int) r).getEntity();
             }
         }
