@@ -6,7 +6,6 @@ import aibg.logika.Game.GameTraining;
 import aibg.logika.Map.Entity.Player;
 import aibg.logika.Map.Map;
 import aibg.logika.dto.*;
-import aibg.logika.serialization.EntityDeserializer;
 import aibg.logika.service.GameService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

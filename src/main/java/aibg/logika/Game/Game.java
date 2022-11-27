@@ -39,6 +39,8 @@ public class Game implements Serializable {
     protected ScoreBoard scoreBoard;
     @JsonIgnore
     protected int bossCounter;
+    @JsonIgnore
+    protected String errorMessage = null;
 
     public Game(Map map) {
         this.map = map;
@@ -54,75 +56,77 @@ public class Game implements Serializable {
         this.hugoBoss = map.getHugoBoss();
         scoreBoard = new ScoreBoard(player1, player2, player3, player4);
         bossCounter=0;
-        Health.generate(this.map, this.players);
-        Experience.generate(this.map,this.players);
+        //Health.generate(this.map, this.players);
+        //Experience.generate(this.map,this.players);
     }
 
     public String update(String action, int playerIdx) {
         if (this.winner != null) {
-            return "Game is finished!";
+            errorMessage = "Game is finished!";
         }
         Player active = players.get(playerIdx);
-
-        if (bossCounter == 4) {
-            bossCounter = 0;
-            hugoBoss.turn(this, players);
-        }
 
         if (action == null) {
             return "Action is null";
         } else {
-            if (active.isTrapped()) { //ukoliko je u blackhole ne moze da radi akciju
-                ((Blackhole) (map.getTile(active.getQ(), active.getR()).getEntity())).releasePlayer();
-                bossCounter++;
-                return "Zarobljeni ste u crnoj rupi";
-            } else {
-                String[] actionParams = action.split(",");//ja sam za to da bude separator ",", ida i move bude preko koordinata
-                if (Arrays.stream(actionParams).count() != 3) {
+            while (bossCounter != 4) {
+                if (active.isTrapped()) { //ukoliko je u blackhole ne moze da radi akciju
+                    ((Blackhole) (map.getTile(active.getQ(), active.getR()).getEntity())).releasePlayer();
                     bossCounter++;
-                    return "Nemate tri parametra vaše akcije";
-                }try {
-                    int actQ = Integer.parseInt(actionParams[1]);
-                    int actR = Integer.parseInt(actionParams[2]);
-
-                if (!(actQ+actR >= -map.getSize() / 2 && actQ + actR <= map.getSize() / 2
-                        && Math.abs(actQ) <= map.getSize() / 2 && Math.abs(actR) <= map.getSize() / 2)) {
-                    bossCounter++;
-                    return "Pokušavate da predjete granice mape";
-                }
-                    //TODO provera da li je u range ta koordinata; ako nije,vraca poslednju koja jeste u tom smeru; to mopzda moze i u okviru obstacle
-                    Entity passiveEntity = this.map.getTile(actQ, actR).getEntity();
-                //ovaj deo proverava da nije neki player na tom polju, ako jeste nad njime ce se obavljati radnja
-                for (java.util.Map.Entry<Integer, Player> pair : players.entrySet()) {
-                    if (pair.getValue().getQ() == actQ && pair.getValue().getR() == actR)
-                        passiveEntity = pair.getValue();
-                }
-                switch (actionParams[0]) {
-                    case "attack": {
-                        String errorMessage = checkAttack(active, actQ, actR, passiveEntity);
-                        if (errorMessage != null) return errorMessage;
-                        break;
-                    }
-                    case "move": {
-                        String errorMessage = checkMove(active, actQ, actR, passiveEntity);
-                        if (errorMessage != null) return errorMessage;
-                        break;
-                    }
-                    default: {
+                    errorMessage = "Zarobljeni ste u crnoj rupi";
+                    break;
+                } else {
+                    String[] actionParams = action.split(",");//ja sam za to da bude separator ",", ida i move bude preko koordinata
+                    if (Arrays.stream(actionParams).count() != 3) {
                         bossCounter++;
-                        return "Poslata pogrešna akcija";
+                        errorMessage = "Nemate tri parametra vaše akcije";
+                        break;
+                    }
+                    try {
+                        int actQ = Integer.parseInt(actionParams[1]);
+                        int actR = Integer.parseInt(actionParams[2]);
+
+                        if (!(actQ + actR >= -map.getSize() / 2 && actQ + actR <= map.getSize() / 2
+                                && Math.abs(actQ) <= map.getSize() / 2 && Math.abs(actR) <= map.getSize() / 2)) {
+                            bossCounter++;
+                            errorMessage = "Pokušavate da predjete granice mape";
+                            break;
+                        }
+                        //TODO provera da li je u range ta koordinata; ako nije,vraca poslednju koja jeste u tom smeru; to mopzda moze i u okviru obstacle
+                        Entity passiveEntity = this.map.getTile(actQ, actR).getEntity();
+                        //ovaj deo proverava da nije neki player na tom polju, ako jeste nad njime ce se obavljati radnja
+                        for (java.util.Map.Entry<Integer, Player> pair : players.entrySet()) {
+                            if (pair.getValue().getQ() == actQ && pair.getValue().getR() == actR)
+                                passiveEntity = pair.getValue();
+                        }
+                        switch (actionParams[0]) {
+                            case "attack": {
+                                errorMessage = checkAttack(active, actQ, actR, passiveEntity);
+                                break;
+                            }
+                            case "move": {
+                                errorMessage = checkMove(active, actQ, actR, passiveEntity);
+                                break;
+                            }
+                            default: {
+                                bossCounter++;
+                                errorMessage = "Poslata pogrešna akcija";
+                                break;
+                            }
+                        }
+                        break;
+                    } catch (Exception e) {
+                        errorMessage = "Niste uneli koordinate u pravom formatu";
                     }
                 }
-            }catch (Exception e) {
-                    return "Niste uneli koordinate u pravom formatu";
-                }
             }
-            if (playerIdx == 4) {
-                hugoBoss.turn(this, players);
+            if(bossCounter==4){
+                hugoBoss.turn(this,this.players);
+                bossCounter=0;
             }
-        }
 
-        return null;
+            return errorMessage;
+        }
     }
 
     private String checkMove(Player active, int actQ, int actR, Entity passiveEntity) {
@@ -146,9 +150,9 @@ public class Game implements Serializable {
         if (hexDistance(actQ, actR, active.getQ(), active.getR()) <= GameParameters.RANGE) {
             Entity obstacle = getObstacle(active.getQ(), active.getR(), actQ, actR);
             bossCounter++;
-            if(!(passiveEntity instanceof Player || passiveEntity instanceof Boss)) {
+            if(!(passiveEntity instanceof Player || passiveEntity instanceof Boss || passiveEntity instanceof Fence)) {
                 passiveEntity.attacked(active,this, actQ, actR);
-                return "Pokušavate da napadnete polje koje nije ni igrač ni boss";
+                return "Pokušavate da napadnete polje koje nije namenjeno za napad";
             }
             if (obstacle != null) {
                 passiveEntity = obstacle;
