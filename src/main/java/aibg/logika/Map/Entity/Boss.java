@@ -26,15 +26,20 @@ public class Boss implements Entity{
     int counter = 0;
     @JsonIgnore
     private static int randomDelayCounter = 0;
+    @JsonIgnore
     int pattern=0;
-
+    @JsonIgnore
     private Tile[] directions = new Tile[]{
             new Tile(Direction.E.q, Direction.E.r),
             new Tile(Direction.SE.q, Direction.SE.r),
             new Tile(Direction.SW.q, Direction.SE.r),
             new Tile(Direction.W.q, Direction.W.r),
             new Tile(Direction.NW.q, Direction.NW.r),
-            new Tile(Direction.NE.q, Direction.NE.r )};
+            new Tile(Direction.NE.q, Direction.NE.r )
+    };
+
+    private boolean bossAction = false;
+    private ArrayList<Tile> bossAttackedTiles = new ArrayList<>();
 
     @Override
     public void stepOn(Player player, Game game, int q, int r) {
@@ -56,14 +61,17 @@ public class Boss implements Entity{
 
 
     public void turn(Game game, HashMap<Integer, Player> players){
+        bossAttackedTiles.clear();
         attackZoneOne(game, players);
         attackZoneTwo(game, players);
+        bossAction = true;
     }
     public void attackZoneOne(Game game, HashMap<Integer, Player> players){
         // Attacks all the players in the first zone.
         for(Player player : players.values()){
             if(player.isZoneOne()){
                 player.attacked(this, game, player.q, player.r);
+                bossAttackedTiles.add(game.getMap().getTile(player.q, player.r));
             }
         }
     }
@@ -104,6 +112,7 @@ public class Boss implements Entity{
         allAttackedTiles.add(symmetryPerY(game.getMap(),symmetryPerDiagonal(game.getMap(),start)));
 
         attackTiles(game,players,allAttackedTiles);
+        bossAttackedTiles.addAll(allAttackedTiles);
 
         if(counter == 4) {  //valjda treba 7 polja da se predje, ne 4? //granica bi trebalo nekako automatski da se odredi na osnovu pocetne koord
             pattern++;
@@ -119,6 +128,7 @@ public class Boss implements Entity{
         ArrayList<Tile> ring=cube_ring(game.getMap(),6);
 
         attackTiles(game,players,ring);
+        bossAttackedTiles.addAll(ring);
 
         pattern++;
         randomDelayCounter=Random();
