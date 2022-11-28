@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.TreeMap;
@@ -28,7 +30,7 @@ import java.util.HashMap;
 public class GameServiceImplementation implements GameService {
 
     private Logger LOG = LoggerFactory.getLogger(GameService.class);
-    private String MAPS_FOLDER = "./maps";
+    private String MAPS_FOLDER = "maps/";
 
     private TreeMap<Integer,Game> games = new TreeMap<>();
     private TreeMap<Integer, GameTraining> trainingGames = new TreeMap<>();
@@ -39,13 +41,18 @@ public class GameServiceImplementation implements GameService {
 
         try {
             //Proverava da li u maps folderu postoji mapa sa odredjenim nazivom
-            if (new File(MAPS_FOLDER, dto.getMapName()).exists()) {
-
-                Path mapPath = (new File(MAPS_FOLDER, dto.getMapName())).toPath();
-                Game game = new Game(new Map(29, mapPath));
+            if (this.getClass().getClassLoader().getResource(MAPS_FOLDER+dto.getMapName())!=null) {
+                LOG.info("1");
+                URL mapsURL = this.getClass().getClassLoader().getResource(MAPS_FOLDER+dto.getMapName());
+                LOG.info("2");
+                Game game = new Game(new Map(29, mapsURL));
+                LOG.info("3");
                 games.put(dto.getGameId(),game);
+                LOG.info("4");
                 ObjectMapper mapper = new ObjectMapper();
+                LOG.info("5");
                 String gameState = mapper.writeValueAsString(game);
+                LOG.info("6");
                 return new GameStateResponseDTO(gameState);
 
 
@@ -62,10 +69,9 @@ public class GameServiceImplementation implements GameService {
     public DTO startTrainGameState(TrainGameStateRequestDTO dto) {
         try {
             //Proverava da li u maps folderu postoji mapa sa odredjenim nazivom
-            if (new File(MAPS_FOLDER, dto.getMapName()).exists()) {
-
-                Path mapPath = (new File(MAPS_FOLDER, dto.getMapName())).toPath();
-                Map map = new Map(29, mapPath);
+            if (this.getClass().getClassLoader().getResource(MAPS_FOLDER+dto.getMapName())!=null) {
+                URL mapsURL = this.getClass().getClassLoader().getResource(MAPS_FOLDER+dto.getMapName());
+                Map map = new Map(29, mapsURL);
 
                 GameTraining game = new GameTraining(map, dto.getPlayerIdx(), this);
                 //game.assignGameToBots();

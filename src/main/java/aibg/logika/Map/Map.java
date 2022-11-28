@@ -9,11 +9,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.io.BufferedReader;
 import java.io.Serializable;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Scanner;
 
 import static java.lang.Math.*;
 
@@ -37,7 +40,7 @@ public class Map implements Serializable {
     private Empty emptyObj;
 
 
-    public Map(int n, Path path) throws GameException {
+    public Map(int n, URL path) throws GameException {
         this.size = n;
         tilemap = new HashMap<>();
         tiles = new ArrayList<>();
@@ -48,12 +51,13 @@ public class Map implements Serializable {
         loadMap(path);
     }
 
-    private void loadMap(Path path) throws GameException{
+    private void loadMap(URL path) throws GameException{
         String mapJsonString;
         int counter = -1;
         int counter2;
         try{
-            mapJsonString = Files.readAllLines(path).get(0);
+            mapJsonString = new Scanner(path.openStream(), "UTF-8").useDelimiter("\\A").next();
+
             ObjectMapper mapper = new ObjectMapper();
             JsonNode mapNode = mapper.readTree(mapJsonString);
             counter = -1;
