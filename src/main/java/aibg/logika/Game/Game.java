@@ -36,8 +36,6 @@ public class Game implements Serializable {
 
     @JsonIgnore
     protected String playerAction;
-
-    protected Player winner;
     @JsonIgnore
     protected HashMap<Integer, Player> players;
     protected ScoreBoard scoreBoard;
@@ -66,9 +64,7 @@ public class Game implements Serializable {
 
     public String update(String action, int playerIdx) {
         hugoBoss.setBossAction(false); //uvek je false, osim u potezu kad boss odigra svoj napad
-        if (this.winner != null) {
-            errorMessage = "Game is finished!";
-        }
+        scoreBoard.update();
         Player active = players.get(playerIdx);
 
         if (action == null) {

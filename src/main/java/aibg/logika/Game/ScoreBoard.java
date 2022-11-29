@@ -22,8 +22,9 @@ public class ScoreBoard {
         players[3] = player4;
     }
 
-    public void update(){
+    public int update(){
         Arrays.sort(players, comparator);
+        return players[0].getPlayerIdx();
     }
 
     public static class CustomComparator implements Comparator<Player> {
@@ -32,11 +33,9 @@ public class ScoreBoard {
             if(player1.getScore() > player2.getScore()){
                 return -1;
             }else if(player1.getScore() == player2.getScore()){
-                float player1KD = (player1.getDeaths() != 0 ? ((float)player1.getKills()/player1.getDeaths()) : player1.getKills());
-                float player2KD = (player2.getDeaths() != 0 ? ((float)player2.getKills()/player2.getDeaths()) : player2.getKills());
-                if(player1KD > player2KD){
+                if(player1.getKD() > player2.getKD()){
                     return -1;
-                }else if(player1KD == player2KD){
+                }else if(player1.getKD() == player2.getKD()){
                     if(player1.getKills() > player2.getKills()){
                         return -1;
                     }else if(player1.getKills() == player2.getKills()){

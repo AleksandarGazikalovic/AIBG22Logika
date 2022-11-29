@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -18,9 +19,8 @@ import java.util.Scanner;
 public class Test {
     public static void main(String[] args) {
         String MAPS_FOLDER = "./maps";
-        Path mapPath = (new File(MAPS_FOLDER, "finalmap.txt")).toPath();
-
-        Map map = new Map(29, mapPath);
+        URL mapsURL = Test.class.getClassLoader().getResource(MAPS_FOLDER+"finalMap.txt");
+        Map map = new Map(29, mapsURL);
         ArrayList<ArrayList<Tile>> tiles = map.getTiles();
         Player player1 = new Player(new Spawnpoint(-7, -7), 1, map);
         Player player2 = new Player(new Spawnpoint(14, -7), 2, map);
