@@ -21,6 +21,7 @@ public class Player implements Entity {
     @JsonIgnore
     protected Spawnpoint spawnpoint;
     protected int playerIdx;
+    protected String name;
     @JsonIgnore
     protected Map map;
     protected int health = GameParameters.STARTING_HEALTH;
@@ -34,11 +35,12 @@ public class Player implements Entity {
     protected float KD = 0;
     protected boolean trapped=false;
 
-    public Player(Spawnpoint spawnpoint, int playerIdx, Map map) {
+    public Player(Spawnpoint spawnpoint, int playerIdx, String name, Map map) {
         r = spawnpoint.getR();
         q = spawnpoint.getQ();
         this.spawnpoint = spawnpoint;
         this.playerIdx = playerIdx;
+        this.name = name;
         this.map = map;
     }
 

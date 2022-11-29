@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Test {
@@ -22,12 +23,17 @@ public class Test {
         URL mapsURL = Test.class.getClassLoader().getResource(MAPS_FOLDER+"finalMap.txt");
         Map map = new Map(29, mapsURL);
         ArrayList<ArrayList<Tile>> tiles = map.getTiles();
-        Player player1 = new Player(new Spawnpoint(-7, -7), 1, map);
-        Player player2 = new Player(new Spawnpoint(14, -7), 2, map);
-        Player player3 = new Player(new Spawnpoint(7, 7), 3, map);
-        Player player4 = new Player(new Spawnpoint(-14, 7), 4, map);
+        List<String> username = new ArrayList<>();
+        username.add("player1");
+        username.add("player2");
+        username.add("player3");
+        username.add("player4");
+        Player player1 = new Player(new Spawnpoint(-7, -7), 1, username.get(0), map);
+        Player player2 = new Player(new Spawnpoint(14, -7), 2, username.get(1), map);
+        Player player3 = new Player(new Spawnpoint(7, 7), 3, username.get(2), map);
+        Player player4 = new Player(new Spawnpoint(-14, 7), 4, username.get(3), map);
 
-        Game game = new Game(map);
+        Game game = new Game(map, username);
         game.getPlayers().put(player1.getPlayerIdx(), player1);
         game.getPlayers().put(player2.getPlayerIdx(), player2);
         game.getPlayers().put(player3.getPlayerIdx(), player3);

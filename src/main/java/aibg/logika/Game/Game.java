@@ -12,6 +12,7 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 @Getter
 @Setter
@@ -44,12 +45,12 @@ public class Game implements Serializable {
     @JsonIgnore
     protected String errorMessage = null;
 
-    public Game(Map map) {
+    public Game(Map map, List<String> playerNames) {
         this.map = map;
-        this.player1 = new Player(spawnpoint1, 1, this.map);
-        this.player2 = new Player(spawnpoint2, 2, this.map);
-        this.player3 = new Player(spawnpoint3, 3, this.map);
-        this.player4 = new Player(spawnpoint4, 4, this.map);
+        this.player1 = new Player(spawnpoint1, 1, playerNames.get(0), this.map);
+        this.player2 = new Player(spawnpoint2, 2, playerNames.get(1), this.map);
+        this.player3 = new Player(spawnpoint3, 3, playerNames.get(2), this.map);
+        this.player4 = new Player(spawnpoint4, 4, playerNames.get(3), this.map);
         this.players = new HashMap<>();
         this.players.put(player1.getPlayerIdx(), player1);
         this.players.put(player2.getPlayerIdx(), player2);
@@ -58,8 +59,8 @@ public class Game implements Serializable {
         this.hugoBoss = map.getHugoBoss();
         scoreBoard = new ScoreBoard(player1, player2, player3, player4);
         bossCounter=0;
-        //Health.generate(this.map, this.players);
-        //Experience.generate(this.map,this.players);
+        Health.generate(this.map, this.players);
+        Experience.generate(this.map,this.players);
     }
 
     public String update(String action, int playerIdx) {

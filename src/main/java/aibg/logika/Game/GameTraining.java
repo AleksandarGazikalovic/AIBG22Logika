@@ -39,32 +39,29 @@ public class GameTraining extends Game{
     private String errorMessage;
 
     // konstruktor za slucaj train-a
-    public GameTraining(Map map, int playerIdx, GameService gameService/*
-,TrainingBot bot1, TrainingBot bot2, TrainingBot bot3*/
-) {
-        super(map);
+    public GameTraining(Map map, int playerIdx, GameService gameService, String username) {
         this.breakCycle = false;
         this.map = map;
         this.gameService = gameService;
         this.playerIdx = playerIdx;
         this.currPlayerIdx = 1;
-        this.player1 = new TrainingBot(spawnpoint1, 1, this.map, this.gameService);
+        this.player1 = new TrainingBot(spawnpoint1, 1, this.map, this.gameService); //dodati imena za botove
         this.player2 = new TrainingBot(spawnpoint2, 2, this.map, this.gameService);
         this.player3 = new TrainingBot(spawnpoint3, 3, this.map, this.gameService);
         this.player4 = new TrainingBot(spawnpoint4, 4, this.map, this.gameService);
         this.hugoBoss = map.getHugoBoss();
         switch(playerIdx) {
             case 1:
-                this.player1 = new Player(spawnpoint1, 1, this.map);
+                this.player1 = new Player(spawnpoint1, 1, username, this.map);
                 break;
             case 2:
-                this.player2 = new Player(spawnpoint2, 2, this.map);
+                this.player2 = new Player(spawnpoint2, 2,username, this.map);
                 break;
             case 3:
-                this.player3 = new Player(spawnpoint3, 3, this.map);
+                this.player3 = new Player(spawnpoint3, 3, username, this.map);
                 break;
             case 4:
-                this.player4 = new Player(spawnpoint4, 4, this.map);
+                this.player4 = new Player(spawnpoint4, 4, username, this.map);
                 break;
         }
         this.players = new HashMap<>();

@@ -9,4 +9,5 @@ public class TrainGameStateRequestDTO extends DTO{
     private String mapName;
     private Integer gameId;
     private Integer playerIdx;
+    private String username;
 }
