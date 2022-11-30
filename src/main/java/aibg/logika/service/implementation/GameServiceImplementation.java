@@ -106,7 +106,8 @@ public class GameServiceImplementation implements GameService {
             Game game = games.get(dto.getGameId());
             String errorMessage = game.update(dto.getAction(), dto.getPlayerIdx());
             String gameState = mapper.writeValueAsString(game);
-            return new DoActionResponseDTO(errorMessage, gameState, game.getPlayerAttack());
+            String playerAttack = mapper.writeValueAsString(game.getPlayerAttack());
+            return new DoActionResponseDTO(errorMessage, gameState, playerAttack);
         } catch (JsonProcessingException e) {
             return new ErrorResponseDTO("Greška pri updatovanja gameState-a");
         }
@@ -142,7 +143,8 @@ public class GameServiceImplementation implements GameService {
             Game game = trainingGames.get(gameId);
             String errorMessage = game.update(action, playerIdx);
             String gameState = mapper.writeValueAsString(game);
-            return new DoActionResponseDTO(errorMessage, gameState, game.getPlayerAttack());
+            String playerAttack = mapper.writeValueAsString(game.getPlayerAttack());
+            return new DoActionResponseDTO(errorMessage, gameState, playerAttack);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
