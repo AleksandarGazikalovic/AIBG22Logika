@@ -8,9 +8,11 @@ import lombok.Setter;
 public class DoActionResponseDTO extends DTO{
     String message;
     String gameState;
+    String playerAttack;
 
-    public DoActionResponseDTO(String message, String gameState) {
+    public DoActionResponseDTO(String message, String gameState, String playerAttack) {
         this.message = message;
         this.gameState = gameState;
+        this.playerAttack = playerAttack;
     }
 }

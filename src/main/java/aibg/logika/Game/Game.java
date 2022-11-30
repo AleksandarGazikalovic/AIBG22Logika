@@ -4,6 +4,7 @@ import aibg.logika.Action.Direction;
 import aibg.logika.Map.Entity.*;
 import aibg.logika.Map.Map;
 import aibg.logika.Map.Tile.Tile;
+import aibg.logika.dto.PlayerAttackDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,9 +35,10 @@ public class Game implements Serializable {
 
 
     protected Boss hugoBoss;
-
+    /** Used to store a valid player attack for front to draw*/
     @JsonIgnore
-    protected String playerAction;
+    protected PlayerAttackDTO playerAttack;
+
     @JsonIgnore
     protected HashMap<Integer, Player> players;
     protected ScoreBoard scoreBoard;
@@ -66,6 +68,7 @@ public class Game implements Serializable {
     public String update(String action, int playerIdx) {
         hugoBoss.setBossAction(false); //uvek je false, osim u potezu kad boss odigra svoj napad
         scoreBoard.update();
+        playerAttack = null;
         Player active = players.get(playerIdx);
 
         if (action == null) {
@@ -155,10 +158,10 @@ public class Game implements Serializable {
                 passiveEntity.attacked(active,this, actQ, actR);
                 return "Pokušavate da napadnete polje koje nije namenjeno za napad";
             }
-            Entity obstacle = getObstacle(active.getQ(), active.getR(), actQ, actR); //ako ima obstacle, postavlja novi playerAction
+            Entity obstacle = getObstacle(active, active.getQ(), active.getR(), actQ, actR); //ako ima obstacle, postavlja novi playerAction
             if (obstacle != null)
                 passiveEntity = obstacle;
-            else playerAction = "attack," + actQ + "," + actR; //ako nema obstacle ni problema stavlja stari
+            else playerAttack = new PlayerAttackDTO(active.getPlayerIdx(), actQ, actR); //ako nema obstacle ni problema, cuva prosledjene vrednosti
             passiveEntity.attacked(active,this, actQ, actR);
         } else {
             bossCounter++;
@@ -180,7 +183,8 @@ public class Game implements Serializable {
 
 
     // pored ovoga, treba proslediti tacne koordinate udara frontu nekako
-    private Entity getObstacle(int startQ, int startR, int endQ, int endR) {
+    /** Checks for obstacles between these coordinates; if obstacle is detected, returns that Entity obstacle and sets playerAttack to obstacle coordinates */
+    private Entity getObstacle(Player active, int startQ, int startR, int endQ, int endR) {
         int hexDistance = hexDistance(startQ, startR, endQ, endR);
         double q = startQ, r = startR;
         double s = -q - r;
@@ -206,13 +210,13 @@ public class Game implements Serializable {
             }
             for (Player player : players.values()) {
                 if (player.getQ() == cordQ && player.getR() == cordR) {
-                    playerAction = "attack," + cordQ + "," + cordR;
+                    playerAttack = new PlayerAttackDTO(active.getPlayerIdx(), cordQ, cordR);
                     return player;
                 }
             }
             if (!(map.getTile(cordQ, cordR).getEntity() instanceof Empty)) { // if (!(map.getTile((int) q, (int) r).getEntity() instanceof Empty))
-                playerAction = "attack," + cordQ + "," + cordR;
-                return map.getTile((int) q, (int) r).getEntity();
+                playerAttack = new PlayerAttackDTO(active.getPlayerIdx(), cordQ, cordR);
+                return map.getTile(cordQ, cordR).getEntity();  //map.getTile((int) q, (int) r).getEntity();
             }
         }
         return null;
