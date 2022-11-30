@@ -42,17 +42,11 @@ public class GameServiceImplementation implements GameService {
         try {
             //Proverava da li u maps folderu postoji mapa sa odredjenim nazivom
             if (this.getClass().getClassLoader().getResource(MAPS_FOLDER+dto.getMapName())!=null) {
-                LOG.info("1");
                 URL mapsURL = this.getClass().getClassLoader().getResource(MAPS_FOLDER+dto.getMapName());
-                LOG.info("2");
-                Game game = new Game(new Map(29, mapsURL));
-                LOG.info("3");
+                Game game = new Game(new Map(29, mapsURL),dto.getPlayerUsernames());
                 games.put(dto.getGameId(),game);
-                LOG.info("4");
                 ObjectMapper mapper = new ObjectMapper();
-                LOG.info("5");
                 String gameState = mapper.writeValueAsString(game);
-                LOG.info("6");
                 return new GameStateResponseDTO(gameState);
 
 
@@ -73,7 +67,7 @@ public class GameServiceImplementation implements GameService {
                 URL mapsURL = this.getClass().getClassLoader().getResource(MAPS_FOLDER+dto.getMapName());
                 Map map = new Map(29, mapsURL);
 
-                GameTraining game = new GameTraining(map, dto.getPlayerIdx(), this);
+                GameTraining game = new GameTraining(map, dto.getPlayerIdx(), this, dto.getUsername());
                 //game.assignGameToBots();
 
                 trainingGames.put(dto.getGameId(), game);

@@ -35,7 +35,7 @@ public class TrainingBot extends Player{
 
 
     public TrainingBot(Spawnpoint spawnpoint, int playerIdx, Map map, GameService gameService) {
-        super(spawnpoint, playerIdx, map);
+        super(spawnpoint, playerIdx,"Bot",map);
         this.gameService = gameService;
         this.id = String.valueOf(playerIdx);
 

@@ -18,8 +18,10 @@ public class Player implements Entity {
     String type = "PLAYER";
     protected int r; // horizontala
     protected int q; // glavna dijagonala
+    @JsonIgnore
     protected Spawnpoint spawnpoint;
     protected int playerIdx;
+    protected String name;
     @JsonIgnore
     protected Map map;
     protected int health = GameParameters.STARTING_HEALTH;
@@ -30,13 +32,15 @@ public class Player implements Entity {
     protected int kills = 0;
     protected int deaths = 0;
     protected int score = 0;
+    protected float KD = 0;
     protected boolean trapped=false;
 
-    public Player(Spawnpoint spawnpoint, int playerIdx, Map map) {
+    public Player(Spawnpoint spawnpoint, int playerIdx, String name, Map map) {
         r = spawnpoint.getR();
         q = spawnpoint.getQ();
         this.spawnpoint = spawnpoint;
         this.playerIdx = playerIdx;
+        this.name = name;
         this.map = map;
     }
 
@@ -67,11 +71,14 @@ public class Player implements Entity {
                 deaths++;
                 ((Player)attacker).increaseExperience(100);
                 ((Player)attacker).kills++;
+                ((Player)attacker).setKD(functionKD(((Player) attacker).getKills(),((Player) attacker).getDeaths()));
+                this.setKD(functionKD(this.kills, this.deaths));
                 respawn(game);
             }
         } else if (attacker instanceof Boss) {
             health-= ((Boss) attacker).getPower();
             if(health<=0){
+                this.setKD(functionKD(this.kills, this.deaths));
                 respawn(game);
             }
         }
@@ -137,6 +144,16 @@ public class Player implements Entity {
     public void heal(){
         health = health + GameParameters.HEAL;
         if(health > GameParameters.STARTING_HEALTH) health = GameParameters.STARTING_HEALTH;
+    }
+
+    public float functionKD(int kills, int deaths){
+        if(deaths!=0) {
+            float KD = (float) kills / (float) deaths;
+        }
+        else {
+            float KD = (float) kills;
+        }
+        return KD;
     }
 
 }
