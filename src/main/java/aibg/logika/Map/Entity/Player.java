@@ -34,6 +34,7 @@ public class Player implements Entity {
     protected int score = 0;
     protected float KD = 0;
     protected boolean trapped=false;
+    protected int illegalMoves = GameParameters.ILLEGAL_MOVES;
 
     public Player(Spawnpoint spawnpoint, int playerIdx, String name, Map map) {
         r = spawnpoint.getR();
@@ -53,7 +54,11 @@ public class Player implements Entity {
     }
 
     public void illegalAction(){
-        // TODO when illegal action happens
+        if(--illegalMoves == 0){
+            illegalMoves = GameParameters.ILLEGAL_MOVES;
+            // TODO when illegal moves are used, punishment?
+            //score--;
+        }
     }
 
 
@@ -66,6 +71,10 @@ public class Player implements Entity {
     @Override
     public void attacked(Entity attacker, Game game, int q, int r) {
         if(attacker instanceof Player) {
+            if( attacker == this ) {
+                this.illegalAction(); //zabranjen napad na sebe
+                return;
+            }
             health-= ((Player) attacker).getPower();
             if(health<=0){
                 deaths++;
