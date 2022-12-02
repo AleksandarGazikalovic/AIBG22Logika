@@ -64,7 +64,7 @@ public class Boss implements Entity{
         bossAttackedTiles.clear();
         attackZoneOne(game, players);
         attackZoneTwo(game, players);
-        bossAction = true;
+        bossAction = true; // TODO jel se ovo koristi negde uopste
     }
     public void attackZoneOne(Game game, HashMap<Integer, Player> players){
         // Attacks all the players in the first zone.
@@ -86,7 +86,7 @@ public class Boss implements Entity{
                     pattern++; //trenutno nema nultog paterna
                     break;
                 case 1:
-                    Tile start = game.getMap().getTile(-6, -2);    //jesu ovo pocetne
+                    Tile start = game.getMap().getTile(-6+ counter, -2- counter);    //jesu ovo pocetne
                     patern1(game, players, start);
                     break;
                 case 2:
@@ -100,9 +100,6 @@ public class Boss implements Entity{
     }
 
     public void patern1(Game game, HashMap<Integer, Player> players, Tile start){
-
-        start.setQ(start.getQ() + counter);
-        start.setR(start.getR() - counter);
         counter++;
 
         ArrayList<Tile> allAttackedTiles = new ArrayList<Tile>();
@@ -114,18 +111,17 @@ public class Boss implements Entity{
         attackTiles(game,players,allAttackedTiles);
         bossAttackedTiles.addAll(allAttackedTiles);
 
-        if(counter == 4) {  //valjda treba 7 polja da se predje, ne 4? //granica bi trebalo nekako automatski da se odredi na osnovu pocetne koord
+        if(counter == 4) {
             pattern++;
             randomDelayCounter=Random();
             counter=0;
         }
-
     }
 
     //prsten napad
     public void patern2(Game game, HashMap<Integer, Player> players){
 
-        ArrayList<Tile> ring=cube_ring(game.getMap(),6);
+        ArrayList<Tile> ring=cube_ring(game.getMap(),7);
 
         attackTiles(game,players,ring);
         bossAttackedTiles.addAll(ring);
@@ -173,7 +169,9 @@ public class Boss implements Entity{
         Tile hex = pom3(map ,map.getTile(0,0), pom2(map,pom1(map, map.getTile(0,0),Direction.NW), radius));
         for(int i = 0;i<6;i++) {
             for (int j = 0; j < radius; j++) {
-                results.add(hex);
+                if(hex.getEntity() instanceof Empty) {
+                    results.add(hex);
+                }
                 hex = pom3(map,hex, directions[i]);
             }
         }
@@ -181,7 +179,7 @@ public class Boss implements Entity{
     }
 
     private Tile symmetryPerY(Map map,Tile start){
-        return map.getTile(start.getR(), start.getQ());
+        return map.getTile(-(start.getQ()+start.getR()), start.getR()); //ovo prvo je s koordinata, q treba zameni mesto sa s, r ostaje isto
     }
 
     private Tile symmetryPerDiagonal(Map map,Tile start){
@@ -193,8 +191,7 @@ public class Boss implements Entity{
         int min = 3;
         int range = max - min + 1;
 
-        int rand = (int)(Math.random() * range) + min;
-        return rand;
+        return (int)(Math.random() * range) + min;
     }
 
 }
