@@ -117,7 +117,7 @@ public class Player implements Entity {
     }
 
     public boolean isZoneOne(){
-        int max = abs(max(q, max(r, -r-q)));
+        int max = max(abs(q), max(abs(r), abs(-r-q)));
         return ( max < 5 && max>= 2 );
     }
 
