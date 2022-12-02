@@ -172,13 +172,12 @@ public class Game implements Serializable {
     }
 
 
-        private Tile calculateCoords ( int q, int r, String direction){
-            int newQ = q + Direction.valueOf(direction).q;
-            int newR = r + Direction.valueOf(direction).r;
+    private Tile calculateCoords ( int q, int r, String direction){
+        int newQ = q + Direction.valueOf(direction).q;
+        int newR = r + Direction.valueOf(direction).r;
 
         return (this.map.getTile(newQ, newR) != null) ? this.map.getTile(newQ, newR) : this.map.getTile(q, r);
-
-        }
+    }
 
 
 

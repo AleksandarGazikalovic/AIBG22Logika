@@ -22,9 +22,8 @@ public class ScoreBoard {
         players[3] = player4;
     }
 
-    public int update(){
+    public void update(){
         Arrays.sort(players, comparator);
-        return players[0].getPlayerIdx();
     }
 
     public static class CustomComparator implements Comparator<Player> {
