@@ -64,7 +64,7 @@ public class Boss implements Entity{
         bossAttackedTiles.clear();
         attackZoneOne(game, players);
         attackZoneTwo(game, players);
-        bossAction = true; // TODO jel se ovo koristi negde uopste
+        bossAction = true;
     }
     public void attackZoneOne(Game game, HashMap<Integer, Player> players){
         // Attacks all the players in the first zone.

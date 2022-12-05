@@ -1,6 +1,7 @@
 package aibg.logika.Game;
 
 import aibg.logika.Map.Entity.Player;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,6 +15,7 @@ import java.util.HashMap;
 public class ScoreBoard {
 
     Player players[] = new Player[4];
+    @JsonIgnore
     CustomComparator comparator = new CustomComparator();
     protected ScoreBoard(Player player1, Player player2, Player player3, Player player4){
         players[0] = player1;

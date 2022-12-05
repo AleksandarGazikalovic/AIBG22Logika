@@ -1,6 +1,7 @@
 package aibg.logika.Map.Entity;
 
 import aibg.logika.Game.Game;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,6 +14,7 @@ public class Blackhole implements Entity{
 
     String type = "BLACKHOLE";
 
+    @JsonIgnore
     Player trappedPlayer=null;
 
 

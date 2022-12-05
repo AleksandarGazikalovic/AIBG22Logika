@@ -28,10 +28,10 @@ public class Game implements Serializable {
     protected Spawnpoint spawnpoint2 = new Spawnpoint(14, -7);
     protected Player player3;
     @JsonIgnore
-    protected Spawnpoint spawnpoint3 = new Spawnpoint(7, 7);
+    protected Spawnpoint spawnpoint3 = new Spawnpoint(-14, 7);
     protected Player player4;
     @JsonIgnore
-    protected Spawnpoint spawnpoint4 = new Spawnpoint(-14, 7);
+    protected Spawnpoint spawnpoint4 = new Spawnpoint(7, 7);
 
 
     protected Boss hugoBoss;
@@ -171,16 +171,6 @@ public class Game implements Serializable {
         return null;
     }
 
-
-    private Tile calculateCoords ( int q, int r, String direction){
-        int newQ = q + Direction.valueOf(direction).q;
-        int newR = r + Direction.valueOf(direction).r;
-
-        return (this.map.getTile(newQ, newR) != null) ? this.map.getTile(newQ, newR) : this.map.getTile(q, r);
-    }
-
-
-
     // pored ovoga, treba proslediti tacne koordinate udara frontu nekako
     /** Checks for obstacles between these coordinates; if obstacle is detected, returns that Entity obstacle and sets playerAttack to obstacle coordinates */
     private Entity getObstacle(Player active, int startQ, int startR, int endQ, int endR) {
@@ -226,4 +216,12 @@ public class Game implements Serializable {
     }
 
 
+    public void removePlayer(int playerIdx) {
+        for (Player player : players.values()) {
+            if (player.getPlayerIdx() == playerIdx && player.getR() == playerIdx) {
+                players.remove(player.getPlayerIdx());
+                player=null;
+            }
+        }
+    }
 }

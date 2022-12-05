@@ -116,7 +116,15 @@ public class GameServiceImplementation implements GameService {
 
     @Override
     public DTO removePlayer(RemovePlayerRequestDTO dto) {
-        return null;
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            Game game = games.get(dto.getGameId());
+            game.removePlayer(dto.getPlayerIdx());
+            String gameState = mapper.writeValueAsString(game);
+            return new RemovePlayerResponseDTO(gameState);
+        } catch (JsonProcessingException e) {
+            return new ErrorResponseDTO("Greška pri izbacivanju igrača " + dto.getPlayerIdx() + " iz igre.");
+        }
     }
 
     @Override

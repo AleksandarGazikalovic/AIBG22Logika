@@ -19,6 +19,7 @@ public class Wormhole implements Entity {
 
     @JsonIgnore
     Wormhole connectedWormhole = null; // Sa kojom crvotocinom je povezana
+    @JsonIgnore
     int q,r;
 
    public Wormhole(int q, int r,int id) {
