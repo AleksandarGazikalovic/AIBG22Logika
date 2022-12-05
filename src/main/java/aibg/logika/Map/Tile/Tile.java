@@ -12,8 +12,8 @@ import java.awt.*;
 @Setter
 @NoArgsConstructor
 public class Tile{
-    private int r; // prva koordinata (horizontala)
     private int q; // druga koordinata (glavna dijagonala)
+    private int r; // prva koordinata (horizontala)
     private Entity entity;
 
     private String tileType;

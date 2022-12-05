@@ -34,6 +34,7 @@ public class Player implements Entity {
     protected int score = 0;
     protected float KD = 0;
     protected boolean trapped=false;
+    @JsonIgnore
     protected int illegalMoves = GameParameters.ILLEGAL_MOVES;
 
     public Player(Spawnpoint spawnpoint, int playerIdx, String name, Map map) {
@@ -115,7 +116,7 @@ public class Player implements Entity {
         q = sp.getQ();
         health = GameParameters.STARTING_HEALTH;
     }
-
+    @JsonIgnore
     public boolean isZoneOne(){
         int max = max(abs(q), max(abs(r), abs(-r-q)));
         return ( max < 5 && max>= 2 );
