@@ -40,6 +40,8 @@ public class Boss implements Entity{
 
     private boolean bossAction = false;
     private ArrayList<Tile> bossAttackedTiles = new ArrayList<>();
+    private int[] radius = new int[]{6,7,9,10};
+    int  range=0;
 
     @Override
     public void stepOn(Player player, Game game, int q, int r) {
@@ -86,11 +88,12 @@ public class Boss implements Entity{
                     pattern++; //trenutno nema nultog paterna
                     break;
                 case 1:
-                    Tile start = game.getMap().getTile(-6+ counter, -2- counter);    //jesu ovo pocetne
-                    patern1(game, players, start);
+                    Tile start1 = game.getMap().getTile(-6 + counter, -2- counter);
+                    Tile start2 = game.getMap().getTile(-5 +counter,-3 -counter);//jesu ovo pocetne
+                    patern1(game, players, start1, start2);
                     break;
                 case 2:
-                    patern2(game, players);
+                        patern2(game, players);
                     break;
                 default:
                     pattern = 1;   //kad prodje sve da pocne od 1 opet
@@ -99,21 +102,25 @@ public class Boss implements Entity{
             randomDelayCounter--;
     }
 
-    public void patern1(Game game, HashMap<Integer, Player> players, Tile start){
-        counter++;
+    public void patern1(Game game, HashMap<Integer, Player> players, Tile start1, Tile start2){
+        counter+=2;
 
         ArrayList<Tile> allAttackedTiles = new ArrayList<Tile>();
-        allAttackedTiles.add(start);
-        allAttackedTiles.add(symmetryPerDiagonal(game.getMap(),start));
-        allAttackedTiles.add(symmetryPerY(game.getMap(),start));
-        allAttackedTiles.add(symmetryPerY(game.getMap(),symmetryPerDiagonal(game.getMap(),start)));
+        allAttackedTiles.add(start1);
+        allAttackedTiles.add(start2);
+        allAttackedTiles.add(symmetryPerDiagonal(game.getMap(),start1));
+        allAttackedTiles.add(symmetryPerDiagonal(game.getMap(),start2));
+        allAttackedTiles.add(symmetryPerY(game.getMap(),start1));
+        allAttackedTiles.add(symmetryPerY(game.getMap(),start2));
+        allAttackedTiles.add(symmetryPerY(game.getMap(),symmetryPerDiagonal(game.getMap(),start1)));
+        allAttackedTiles.add(symmetryPerY(game.getMap(),symmetryPerDiagonal(game.getMap(),start2)));
 
         attackTiles(game,players,allAttackedTiles);
         bossAttackedTiles.addAll(allAttackedTiles);
 
-        if(counter == 4) {
+        if(counter == 6) {
             pattern++;
-            randomDelayCounter=Random();
+            randomDelayCounter=Random(3,7);
             counter=0;
         }
     }
@@ -121,13 +128,17 @@ public class Boss implements Entity{
     //prsten napad
     public void patern2(Game game, HashMap<Integer, Player> players){
 
-        ArrayList<Tile> ring=cube_ring(game.getMap(),7);
+        ArrayList<Tile> ring=cube_ring(game.getMap(),radius[range]);
+        range++;
+        if(range == 4){
+            range=0;
+        }
 
         attackTiles(game,players,ring);
         bossAttackedTiles.addAll(ring);
 
         pattern++;
-        randomDelayCounter=Random();
+        randomDelayCounter=Random(3,7);
     }
 
     /** Attacks tiles forwarded as parameter allAttackedTiles */
@@ -186,9 +197,7 @@ public class Boss implements Entity{
         return map.getTile(start.getQ()*(-1), start.getR()*(-1));
     }
 
-    private static int Random(){
-        int max = 7;
-        int min = 3;
+    private static int Random(int min,int max){
         int range = max - min + 1;
 
         return (int)(Math.random() * range) + min;
