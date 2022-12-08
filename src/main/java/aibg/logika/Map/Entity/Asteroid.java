@@ -5,14 +5,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import static aibg.logika.Game.GameParameters.FENCE_HEALTH;
+import static aibg.logika.Game.GameParameters.ASTEROID_HEALTH;
+
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class Fence implements Entity{
-    String type="FENCE";
-    int health=FENCE_HEALTH;
+public class Asteroid implements Entity{
+    String type="ASTEROID";
+    int health=ASTEROID_HEALTH;
 
     @Override
     public void stepOn(Player player, Game game, int q, int r) {

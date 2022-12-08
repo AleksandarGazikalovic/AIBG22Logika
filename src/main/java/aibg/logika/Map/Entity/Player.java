@@ -24,7 +24,11 @@ public class Player implements Entity {
     protected String name;
     @JsonIgnore
     protected Map map;
+    @JsonIgnore
+    protected int starting_health = 1000;
     protected int health = GameParameters.STARTING_HEALTH;
+    @JsonIgnore
+    protected int starting_power = 150;
     protected int power = GameParameters.STARTING_POWER;
     protected int level = 1;
     @JsonIgnore
@@ -32,10 +36,9 @@ public class Player implements Entity {
     protected int kills = 0;
     protected int deaths = 0;
     protected int score = 0;
-    protected float KD = 0;
+    protected double KD = 0;
     protected boolean trapped=false;
-    @JsonIgnore
-    protected int illegalMoves = GameParameters.ILLEGAL_MOVES;
+    protected int trapDuration = 0;
 
     public Player(Spawnpoint spawnpoint, int playerIdx, String name, Map map) {
         r = spawnpoint.getR();
@@ -55,11 +58,7 @@ public class Player implements Entity {
     }
 
     public void illegalAction(){
-        if(--illegalMoves == 0){
-            illegalMoves = GameParameters.ILLEGAL_MOVES;
-            // TODO when illegal moves are used, punishment?
-            //score--;
-        }
+            health -= health/10;
     }
 
 
@@ -79,7 +78,8 @@ public class Player implements Entity {
             health-= ((Player) attacker).getPower();
             if(health<=0){
                 deaths++;
-                ((Player)attacker).increaseExperience(100);
+                ((Player)attacker).increaseExperience(GameParameters.EXP_ON_KILL);
+                ((Player)attacker).increaseScore(GameParameters.SCORE_ON_KILL);
                 ((Player)attacker).kills++;
                 ((Player)attacker).setKD(functionKD(((Player) attacker).getKills(),((Player) attacker).getDeaths()));
                 this.setKD(functionKD(this.kills, this.deaths));
@@ -88,6 +88,7 @@ public class Player implements Entity {
         } else if (attacker instanceof Boss) {
             health-= ((Boss) attacker).getPower();
             if(health<=0){
+                deaths++;
                 this.setKD(functionKD(this.kills, this.deaths));
                 respawn(game);
             }
@@ -114,7 +115,7 @@ public class Player implements Entity {
 
         r = sp.getR();
         q = sp.getQ();
-        health = GameParameters.STARTING_HEALTH;
+        health = starting_health;
     }
     @JsonIgnore
     public boolean isZoneOne(){
@@ -129,39 +130,24 @@ public class Player implements Entity {
             if(level < GameParameters.MAX_LEVEL){
                 level++;
                 experience -= GameParameters.EXP_TO_LVL_UP; // vraca na nulu (+ visak ako je prebacio granicu)
-                switch (level)   {
-                    case 2:{
-                        power += GameParameters.LEVEL_2_POWER_INCREMENT;
-                        break;
-                    }
-                    case 3:{
-                        power += GameParameters.LEVEL_3_POWER_INCREMENT;
-                        break;
-                    }
-                    case 4:{
-                        power += GameParameters.LEVEL_4_POWER_INCREMENT;
-                        break;
-                    }
-                    case 5:{
-                        power += GameParameters.LEVEL_5_POWER_INCREMENT;
-                        break;
-                    }
-                }
+                this.setStarting_health(starting_health + GameParameters.HEALTH_INCREMENT);
+                health = starting_health;
+                this.setStarting_power(starting_power + GameParameters.POWER_INCREMENT);
+                power = starting_power;
             }
         }
     }
 
     public void heal(){
-        health = health + GameParameters.HEAL;
-        if(health > GameParameters.STARTING_HEALTH) health = GameParameters.STARTING_HEALTH;
+        health = starting_health;
     }
 
-    public float functionKD(int kills, int deaths){
+    public double functionKD(int kills, int deaths){
         if(deaths!=0) {
-            float KD = (float) kills / (float) deaths;
+            this.KD = (double) kills / (double) deaths;
         }
         else {
-            float KD = (float) kills;
+            this.KD = (double) kills;
         }
         return KD;
     }
