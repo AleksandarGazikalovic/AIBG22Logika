@@ -1,9 +1,7 @@
 package aibg.logika.Game;
 
-import aibg.logika.Action.Direction;
 import aibg.logika.Map.Entity.*;
 import aibg.logika.Map.Map;
-import aibg.logika.Map.Tile.Tile;
 import aibg.logika.dto.PlayerAttackDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
@@ -154,7 +152,7 @@ public class Game implements Serializable {
     private String checkAttack(Player active, int actQ, int actR, Entity passiveEntity) {
         if (hexDistance(actQ, actR, active.getQ(), active.getR()) <= GameParameters.RANGE) {
             bossCounter++;
-            if(!(passiveEntity instanceof Player || passiveEntity instanceof Boss || passiveEntity instanceof Fence)) {
+            if(!(passiveEntity instanceof Player || passiveEntity instanceof Boss || passiveEntity instanceof Asteroid)) {
                 passiveEntity.attacked(active,this, actQ, actR);
                 return "Pokušavate da napadnete polje koje nije namenjeno za napad";
             }

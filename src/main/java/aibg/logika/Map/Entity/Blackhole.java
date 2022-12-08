@@ -24,6 +24,7 @@ public class Blackhole implements Entity{
         if(trappedPlayer==null) {
             player.setQ(q);
             player.setR(r);
+            player.setTrapDuration(2);
             trappedPlayer = player;
             player.setTrapped(true);
         }else{
@@ -43,8 +44,14 @@ public class Blackhole implements Entity{
 
     public void releasePlayer(){ //trenutno jedan potez traje zarobljenost, moze se povecati uvodjenjem brojaca
         if(trappedPlayer!=null){
-            trappedPlayer.setTrapped(false);
-            trappedPlayer=null;
+            if(trappedPlayer.trapDuration!=0) {
+                trappedPlayer.trapDuration--;
+            }
+            if(trappedPlayer.trapDuration==0) {
+                trappedPlayer.setTrapped(false);
+                trappedPlayer = null;
+            }
+
         }
 
     }

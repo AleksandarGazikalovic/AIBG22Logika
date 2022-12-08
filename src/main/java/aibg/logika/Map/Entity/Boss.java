@@ -40,7 +40,7 @@ public class Boss implements Entity{
 
     private boolean bossAction = false;
     private ArrayList<Tile> bossAttackedTiles = new ArrayList<>();
-    private int[] radius = new int[]{6,7,9,10};
+    private int[] radius = new int[]{6,8,10};
     int  range=0;
 
     @Override
@@ -51,9 +51,7 @@ public class Boss implements Entity{
 
     @Override
     public void attacked(Entity attacker, Game game, int q, int r) {
-        // TODO povecati exp i score nekim smislenim brojem :)
         ((Player)attacker).increaseScore(((Player) attacker).getPower());
-        ((Player)attacker).increaseExperience(((Player) attacker).getPower());
     }
 
 
@@ -93,7 +91,7 @@ public class Boss implements Entity{
                     patern1(game, players, start1, start2);
                     break;
                 case 2:
-                        patern2(game, players);
+                    patern2(game, players);
                     break;
                 default:
                     pattern = 1;   //kad prodje sve da pocne od 1 opet

@@ -17,9 +17,10 @@ public class Health implements Entity {
         while (true){
             boolean playerSpotted = false;
             int size = map.getSize();
-            int r = ((int) (Math.random() * (size/2 + size/2) - size/2));
-            int q = ((int) (Math.random() * (size/2 + size/2) - size/2));
-            if(r+q >=-size/2 && r+q <= size/2 && Math.abs(r) <=size/2 && Math.abs(q) <= size/2) {
+            int firstFencePosition = 11; //nema expirience van prvog fence-a
+            int r = ((int) (Math.random() * (firstFencePosition + firstFencePosition) - firstFencePosition));
+            int q = ((int) (Math.random() * (firstFencePosition + firstFencePosition) - firstFencePosition));
+            if(r+q >=-firstFencePosition && r+q <= firstFencePosition && Math.abs(r) <=firstFencePosition && Math.abs(q) <= firstFencePosition) {
                 Tile tile = map.getTile(q, r);
                 if(tile.getEntity() instanceof Empty){
                     //proverava da li su igraci na tom polju

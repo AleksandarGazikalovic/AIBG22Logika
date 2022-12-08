@@ -40,7 +40,10 @@ public class Wormhole implements Entity {
     public void stepOn(Player player, Game game, int q, int r) {
         int newQ = connectedWormhole.getQ() + (q - player.getQ());
         int newR = connectedWormhole.getR() + (r - player.getR());
-        game.getMap().getTile(newQ,newR).getEntity().stepOn(player,game,newQ,newR);
+        if(!(game.getMap().getTile(newQ,newR).getEntity() instanceof Empty)) {
+        } else {
+            game.getMap().getTile(newQ, newR).getEntity().stepOn(player, game, newQ, newR);
+        }
     }
 
     @Override

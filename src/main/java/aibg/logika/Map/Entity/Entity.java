@@ -6,7 +6,7 @@ import aibg.logika.Game.Game;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = Blackhole.class, name = "BLACKHOLE"),
         @JsonSubTypes.Type(value = Empty.class, name = "EMPTY"),
-        @JsonSubTypes.Type(value = Fence.class, name = "FENCE"),
+        @JsonSubTypes.Type(value = Asteroid.class, name = "FENCE"),
         @JsonSubTypes.Type(value = Wormhole.class, name = "WORMHOLE"),
 }
 )*/

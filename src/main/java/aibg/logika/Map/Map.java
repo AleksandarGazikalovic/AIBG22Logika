@@ -9,11 +9,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.io.BufferedReader;
 import java.io.Serializable;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -33,7 +30,7 @@ public class Map implements Serializable {
     @JsonIgnore
     private HashMap<Integer, Tile> tilemap;
     @JsonIgnore
-    private ArrayList<Tile> fence;
+    private ArrayList<Tile> asteroid;
     @JsonIgnore
     private Boss hugoBoss;
     @JsonIgnore
@@ -45,7 +42,7 @@ public class Map implements Serializable {
         tilemap = new HashMap<>();
         tiles = new ArrayList<>();
         wormholes = new ArrayList<>();
-        fence = new ArrayList<>();
+        asteroid = new ArrayList<>();
         hugoBoss = new Boss();
         emptyObj=new Empty();
         loadMap(path);
@@ -103,10 +100,10 @@ public class Map implements Serializable {
                             currEntity = mapNode.get(counter).get(counter2).get("entity").asText();
                             switch (currEntity){
                                 case "FENCE":
-                                    temp = new Tile(q,r, "FULL",new Fence());
+                                    temp = new Tile(q,r, "FULL",new Asteroid());
                                     tiles.get(counter).add(temp);
                                     tilemap.put(hash(q,r,-q-r),temp);
-                                    fence.add((Tile) temp);
+                                    asteroid.add((Tile) temp);
                                     break;
                                 case "BOSS":
                                     temp = new Tile(q, r, "FULL",hugoBoss);
