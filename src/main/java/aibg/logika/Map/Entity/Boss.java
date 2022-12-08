@@ -40,7 +40,9 @@ public class Boss implements Entity{
 
     private boolean bossAction = false;
     private ArrayList<Tile> bossAttackedTiles = new ArrayList<>();
+    @JsonIgnore
     private int[] radius = new int[]{6,8,10};
+    @JsonIgnore
     int  range=0;
 
     @Override
@@ -128,7 +130,7 @@ public class Boss implements Entity{
 
         ArrayList<Tile> ring=cube_ring(game.getMap(),radius[range]);
         range++;
-        if(range == 4){
+        if(range == 2){
             range=0;
         }
 

@@ -1,13 +1,9 @@
 package aibg.logika.Game;
 
-import aibg.logika.Map.Entity.Boss;
 import aibg.logika.Map.Entity.Player;
 import aibg.logika.Map.Entity.TrainingBot;
 import aibg.logika.Map.Map;
-import aibg.logika.dto.DoActionRequestDTO;
 import aibg.logika.dto.DoActionResponseDTO;
-import aibg.logika.dto.TrainGameStateRequestDTO;
-import aibg.logika.dto.TrainRequestDTO;
 import aibg.logika.service.GameService;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
@@ -17,7 +13,6 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.concurrent.Semaphore;
 
 @Setter
 @Getter
@@ -49,7 +44,7 @@ public class GameTraining extends Game{
         this.player2 = new TrainingBot(spawnpoint2, 2, this.map, this.gameService);
         this.player3 = new TrainingBot(spawnpoint3, 3, this.map, this.gameService);
         this.player4 = new TrainingBot(spawnpoint4, 4, this.map, this.gameService);
-        this.hugoBoss = map.getHugoBoss();
+        this.boss = map.getBoss();
         switch(playerIdx) {
             case 1:
                 this.player1 = new Player(spawnpoint1, 1, username, this.map);
