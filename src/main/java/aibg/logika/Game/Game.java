@@ -98,6 +98,7 @@ public class Game implements Serializable {
                                 && Math.abs(actQ) <= map.getSize() / 2 && Math.abs(actR) <= map.getSize() / 2)) {
                             bossCounter++;
                             errorMessage = "Pokušavate da predjete granice mape";
+                            active.illegalAction();
                             break;
                         }
                         //TODO provera da li je u range ta koordinata; ako nije,vraca poslednju koja jeste u tom smeru; to mopzda moze i u okviru obstacle
@@ -146,7 +147,8 @@ public class Game implements Serializable {
             passiveEntity.stepOn(active, this, actQ, actR);
             bossCounter++;
             if(oldQ== active.getQ() && oldR== active.getR()) {
-                return "Pokušali ste da se pomerite na polje koje je tipa FULL";
+                active.illegalAction();
+                return "Pokušali ste da se pomerite na polje koje je tipa FULL ili player";
             }
         } else {
             bossCounter++;
@@ -161,6 +163,7 @@ public class Game implements Serializable {
             bossCounter++;
             if(!(passiveEntity instanceof Player || passiveEntity instanceof Boss || passiveEntity instanceof Asteroid)) {
                 passiveEntity.attacked(active,this, actQ, actR);
+                active.illegalAction();
                 return "Pokušavate da napadnete polje koje nije namenjeno za napad";
             }
 

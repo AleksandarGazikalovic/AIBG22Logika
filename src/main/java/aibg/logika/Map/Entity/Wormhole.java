@@ -41,6 +41,7 @@ public class Wormhole implements Entity {
         int newQ = connectedWormhole.getQ() + (q - player.getQ());
         int newR = connectedWormhole.getR() + (r - player.getR());
         if(!(game.getMap().getTile(newQ,newR).getEntity() instanceof Empty)) {
+            player.illegalAction();
         } else {
             game.getMap().getTile(newQ, newR).getEntity().stepOn(player, game, newQ, newR);
         }

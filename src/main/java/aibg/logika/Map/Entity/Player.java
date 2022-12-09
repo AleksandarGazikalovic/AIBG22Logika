@@ -64,7 +64,6 @@ public class Player implements Entity {
 
     @Override
     public void stepOn(Player player, Game game, int q, int r) {
-        //illegal ili da ga rani
         player.illegalAction();
     }
 
@@ -76,6 +75,7 @@ public class Player implements Entity {
                 return;
             }
             health-= ((Player) attacker).getPower();
+            ((Player)attacker).increaseExperience(GameParameters.EXP_ON_HIT);
             if(health<=0){
                 deaths++;
                 ((Player)attacker).increaseExperience(GameParameters.EXP_ON_KILL);
