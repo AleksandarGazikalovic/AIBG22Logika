@@ -71,6 +71,7 @@ public class Game implements Serializable {
 
         if (action == null) {
             bossCounter++;
+            active.illegalAction();
             return "Action is null";
         } else {
             while (bossCounter != 4) {
@@ -78,6 +79,7 @@ public class Game implements Serializable {
                     ((Blackhole) (map.getTile(active.getQ(), active.getR()).getEntity())).releasePlayer();
                     bossCounter++;
                     errorMessage = "Zarobljeni ste u crnoj rupi";
+                    active.illegalAction();
                     break;
                 } else {
                     action = action.replaceAll(" ","");
@@ -85,6 +87,7 @@ public class Game implements Serializable {
                     if (Arrays.stream(actionParams).count() != 3) {
                         bossCounter++;
                         errorMessage = "Nemate tri parametra vaše akcije";
+                        active.illegalAction();
                         break;
                     }
                     try {
@@ -116,12 +119,14 @@ public class Game implements Serializable {
                             default: {
                                 bossCounter++;
                                 errorMessage = "Poslata pogrešna akcija";
+                                active.illegalAction();
                                 break;
                             }
                         }
                         break;
                     } catch (Exception e) {
                         errorMessage = "Niste uneli koordinate u pravom formatu";
+                        active.illegalAction();
                     }
                 }
             }

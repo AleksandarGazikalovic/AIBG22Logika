@@ -38,7 +38,10 @@ public class Blackhole implements Entity{
         if(trappedPlayer!=null){
             trappedPlayer.attacked(attacker, game, q, r);
         }
-        /*else{attacker.illegalAction();}*/
+        else{
+            if (attacker instanceof Player) {
+                ((Player)attacker).illegalAction();
+            }}
     }
 
 
