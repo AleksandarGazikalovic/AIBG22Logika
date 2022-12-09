@@ -80,6 +80,7 @@ public class Player implements Entity {
                 this.deaths++;
                 this.setTrapped(false);
                 ((Player)attacker).increaseExperience(GameParameters.EXP_ON_KILL);
+                ((Player)attacker).increaseScore(GameParameters.SCORE_ON_HIT);
                 ((Player)attacker).kills++;
                 ((Player)attacker).setKD(functionKD(((Player) attacker).getKills(),((Player) attacker).getDeaths()));
                 this.setKD(functionKD(this.kills, this.deaths));
