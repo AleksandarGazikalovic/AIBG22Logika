@@ -164,7 +164,6 @@ public class Game implements Serializable {
             bossCounter++;
             if(!(passiveEntity instanceof Player || passiveEntity instanceof Boss || passiveEntity instanceof Asteroid)) {
                 passiveEntity.attacked(active,this, actQ, actR);
-                active.illegalAction();
                 return "Pokušavate da napadnete polje koje nije namenjeno za napad";
             }
 
