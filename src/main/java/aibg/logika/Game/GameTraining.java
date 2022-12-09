@@ -1,7 +1,6 @@
 package aibg.logika.Game;
 
-import aibg.logika.Map.Entity.Player;
-import aibg.logika.Map.Entity.TrainingBot;
+import aibg.logika.Map.Entity.*;
 import aibg.logika.Map.Map;
 import aibg.logika.dto.DoActionResponseDTO;
 import aibg.logika.service.GameService;
@@ -27,15 +26,12 @@ public class GameTraining extends Game{
     @JsonIgnore
     private int playerIdx;
     @JsonIgnore
-    private boolean breakCycle;
-    @JsonIgnore
     private int currPlayerIdx;
     @JsonIgnore
     private String errorMessage;
 
     // konstruktor za slucaj train-a
     public GameTraining(Map map, int playerIdx, GameService gameService, String username) {
-        this.breakCycle = false;
         this.map = map;
         this.gameService = gameService;
         this.playerIdx = playerIdx;
@@ -64,13 +60,18 @@ public class GameTraining extends Game{
         this.players.put(player2.getPlayerIdx(), player2);
         this.players.put(player3.getPlayerIdx(), player3);
         this.players.put(player4.getPlayerIdx(), player4);
+        scoreBoard = new ScoreBoard(player1, player2, player3, player4);
+        bossCounter=0;
+        Health.generate(this.map, this.players);
+        Experience.generate(this.map,this.players);
     }
 
+    /*
     public void playBot() { // odigra potez bota i azurira gameState
         TrainingBot currPlayer = (TrainingBot) players.get(currPlayerIdx);
         gameState = currPlayer.runBot(gameState);
-        currPlayerIdx++;
     }
+    */
 
     // Odigra jednu celu rundu trening igre, redosled zavisi od playerIdx-a igraca
     // i na kraju vrati gameState
@@ -80,9 +81,8 @@ public class GameTraining extends Game{
         // dohvati onog koji trenutno treba da odigra
         // ako je bot, odradi mu akciju i predji na sledeceg, isto i za bossa a on resetuje currPlayerIdx
         // ako je igrac, njemu vrati trenutni gameState
-
+        boolean breakCycle = false;
         while (true) {
-
             if (currPlayerIdx == playerIdx) { // igra igrac ili prekida while ako je ponovo dosao red na igraca
                 if (breakCycle){
                     breakCycle = false;
@@ -90,6 +90,11 @@ public class GameTraining extends Game{
                 }
                 LOG.info("Player did his thing: " + LocalDateTime.now());
                 DoActionResponseDTO actionResponse=((DoActionResponseDTO)this.gameService.doActionTrain(gameId, playerIdx, action));
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
                 gameState = actionResponse.getGameState();
                 errorMessage = actionResponse.getMessage();
                 currPlayerIdx++;
@@ -97,9 +102,9 @@ public class GameTraining extends Game{
             } else { // igraju botovi i boss
 
                 if (currPlayerIdx != 5) { // igra bot
-                    playBot();
+                    ((TrainingBot)players.get(currPlayerIdx)).runBot(this);    //poziva update gejma
+                    currPlayerIdx++;
                 } else { // igra boss
-                    // TODO: na ovom mestu u kodu Boss treba da odigra svoj potez, dodati kada bude implementirano
                     currPlayerIdx = 1;
                 }
 

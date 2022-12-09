@@ -74,10 +74,8 @@ public class GameServiceImplementation implements GameService {
 
                 ObjectMapper mapper = new ObjectMapper();
                 String gameState = mapper.writeValueAsString(game);
-                game.setGameState(gameState);
+                game.setGameState(gameState); // sto se radi ovo? zasto se cuva gameState kao string kad moze uvek samo da se serijalizuje gejm
                 return new GameStateResponseDTO(gameState);
-
-
             } else {
                 return new ErrorResponseDTO("U maps folderu ne postoji mapa sa datim imenom.");
             }
@@ -127,10 +125,12 @@ public class GameServiceImplementation implements GameService {
         }
     }
 
+    //ovo poziva server
     @Override
     public DTO train(TrainRequestDTO dto) {
         // dohvati game, player odradi svoje, potom botovi i krajnje stanje vraca
         // prvo dohvati game
+        ObjectMapper mapper = new ObjectMapper();
         GameTraining game = trainingGames.get(dto.getGameId());
 
         // odigra jednu celu rundu
@@ -139,17 +139,22 @@ public class GameServiceImplementation implements GameService {
         if (game.getGameState() == null){
             return new ErrorResponseDTO("Greška pri igranju trening igre, nesto je poslo po zlu pri azuriranju gameState-a.");
         }
-            String gameState = game.getGameState();
+        try {
+            String gameState = mapper.writeValueAsString(game);
             return new TrainResponseDTO(errorMessage, gameState);
+        }catch (JsonProcessingException e) {
+            return new ErrorResponseDTO("train: Greska pri serijalizaciji game-a");
+        }
 
     }
 
+    //ovo se poziva iz  rounda
     @Override
     public DTO doActionTrain(Integer gameId, Integer playerIdx, String action) {
         ObjectMapper mapper = new ObjectMapper();
         try {
             Game game = trainingGames.get(gameId);
-            String errorMessage = game.update(action, playerIdx);
+            String errorMessage = game.update(action, playerIdx);//ne moze?
             String gameState = mapper.writeValueAsString(game);
             String playerAttack = mapper.writeValueAsString(game.getPlayerAttack());
             return new DoActionResponseDTO(errorMessage, gameState, playerAttack);

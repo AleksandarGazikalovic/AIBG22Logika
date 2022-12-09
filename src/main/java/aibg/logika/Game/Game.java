@@ -64,6 +64,7 @@ public class Game implements Serializable {
     }
 
     public String update(String action, int playerIdx) {
+        errorMessage = null;
         boss.setBossAction(false); //uvek je false, osim u potezu kad boss odigra svoj napad
         scoreBoard.update();
         playerAttack = null;
@@ -230,10 +231,19 @@ public class Game implements Serializable {
 
     public void removePlayer(int playerIdx) {
         for (Player player : players.values()) {
-            if (player.getPlayerIdx() == playerIdx && player.getR() == playerIdx) {
-                players.remove(player.getPlayerIdx());
+            if (player.getPlayerIdx() == playerIdx ) {
+                if(player1 == player) {
+                    player1 = null;
+                }else if(player2 == player){
+                    player2 = null;
+                }else if(player3 == player){
+                    player3 = null;
+                } else if(player4 == player){
+                    player4 = null;
+                }
                 player=null;
             }
         }
+        players.remove(playerIdx);
     }
 }
