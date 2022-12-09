@@ -128,7 +128,7 @@ public class Boss implements Entity{
 
         ArrayList<Tile> ring=cube_ring(game.getMap(),radius[range]);
         range++;
-        if(range == 4){
+        if(range == 3){
             range=0;
         }
 

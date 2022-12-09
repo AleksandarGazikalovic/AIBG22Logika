@@ -32,7 +32,7 @@ public class Game implements Serializable {
     protected Spawnpoint spawnpoint4 = new Spawnpoint(7, 7);
 
 
-    protected Boss hugoBoss;
+    protected Boss boss;
     /** Used to store a valid player attack for front to draw*/
     @JsonIgnore
     protected PlayerAttackDTO playerAttack;
@@ -56,7 +56,7 @@ public class Game implements Serializable {
         this.players.put(player2.getPlayerIdx(), player2);
         this.players.put(player3.getPlayerIdx(), player3);
         this.players.put(player4.getPlayerIdx(), player4);
-        this.hugoBoss = map.getHugoBoss();
+        this.boss = map.getBoss();
         scoreBoard = new ScoreBoard(player1, player2, player3, player4);
         bossCounter=0;
         Health.generate(this.map, this.players);
@@ -64,7 +64,8 @@ public class Game implements Serializable {
     }
 
     public String update(String action, int playerIdx) {
-        hugoBoss.setBossAction(false); //uvek je false, osim u potezu kad boss odigra svoj napad
+        errorMessage = null;
+        boss.setBossAction(false); //uvek je false, osim u potezu kad boss odigra svoj napad
         scoreBoard.update();
         playerAttack = null;
         Player active = players.get(playerIdx);
@@ -124,7 +125,7 @@ public class Game implements Serializable {
                 }
             }
             if(bossCounter==4){
-                hugoBoss.turn(this,this.players);
+                boss.turn(this,this.players);
                 bossCounter=0;
             }
 
@@ -216,10 +217,19 @@ public class Game implements Serializable {
 
     public void removePlayer(int playerIdx) {
         for (Player player : players.values()) {
-            if (player.getPlayerIdx() == playerIdx && player.getR() == playerIdx) {
-                players.remove(player.getPlayerIdx());
+            if (player.getPlayerIdx() == playerIdx ) {
+                if(player1 == player) {
+                    player1 = null;
+                }else if(player2 == player){
+                    player2 = null;
+                }else if(player3 == player){
+                    player3 = null;
+                } else if(player4 == player){
+                    player4 = null;
+                }
                 player=null;
             }
         }
+        players.remove(playerIdx);
     }
 }
