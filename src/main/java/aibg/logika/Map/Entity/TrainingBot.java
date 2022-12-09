@@ -52,9 +52,19 @@ public class TrainingBot extends Player{
 
 
         do{
-            someAction=randomMove();
-        }
-        while(game.update(someAction,this.playerIdx)!=null);
+            Player enemy = game.getPlayer1();
+            for(Player pl:game.getPlayers().values()){ //trazi najblizeg
+                if (pl.getPlayerIdx() == this.playerIdx)
+                    continue;
+                if(game.hexDistance(this.q,this.r,enemy.getQ(),enemy.getR())>game.hexDistance(this.q,this.r,pl.getQ(),pl.getR())){
+                    enemy = pl;
+                }
+            }
+            if(game.hexDistance(this.q,this.r,enemy.getQ(),enemy.getR())<=3){
+                someAction = "attack,"+enemy.getQ()+","+enemy.getR();
+            }else someAction = imAStar(map.getTile(enemy.getQ(),enemy.getR()),new HashSet<Entity>(),game);
+
+        }while(game.update(someAction,this.playerIdx)!=null);
 
         LOG.info(String.valueOf("Training bot " + playerIdx + " did his thing: " + someAction));
         //return dto.getGameState(); ovo treba da vraca, nakon sto se srede bagovi
@@ -77,16 +87,17 @@ public class TrainingBot extends Player{
     private String imAStar(Tile target, Set<Entity> secondary, GameTraining game){
         PriorityQueue<Node> queue = new PriorityQueue<>(11, new NodeComparator());
         Set<Tile> visited = new HashSet<>();
-
-        fillQueue(target, queue, game); /** napuni prioritetni red susedima polja na kome se bot trenutno nalazi */
+        Node start = new Node(map.getTile(this.q,this.r),0,game.hexDistance(this.q,this.r,target.getQ(),target.getR()),null); // mora null  da se stavi zbog fullQueue
+        fillQueue(start,target,visited, queue,secondary, game); /** napuni prioritetni red susedima polja na kome se bot trenutno nalazi */
 
         while(!queue.isEmpty()){
             Node min= queue.poll();
             while(visited.contains(min)){
                 min = queue.poll();
             }
-            if(min.tile == target || secondary.contains(min.tile) || min.heuristics == 1) //pronadjeno
+            if(min.heuristics == 1 || min.tile == target || secondary.contains(min.tile) ) //izmeniti mozda, tako da bude
                 return min.move;
+            fillQueue(min,target,visited, queue,secondary, game);
             //TODO ako nije pronadjeno, ubacim ovde opt sve one ifove za dodavanje suseda u red, ALI kad dodajem u red, q i r menjam u odnosu na q i r iz min, distance postavljam na min.distance+1, a move !samo prenosim identicno!! jer to pocetno move treba da mi se vrati
         }
 
@@ -94,59 +105,84 @@ public class TrainingBot extends Player{
     }
 
 
-    private PriorityQueue<Node> fillQueue(Tile target, PriorityQueue<Node> queue, GameTraining game) {
-        int q = this.q;
-        int r = this.r; //TODO dodati u uslove da full polja ne mogu da se dodaju u red, pa u elsu proveriti,ako je to full polje target ili neko od sekundarnih return ih
+    private void fillQueue(Node node,Tile target, Set<Tile> visited, PriorityQueue<Node> queue, Set<Entity> secondary, GameTraining game) { //TODO dodati u uslove da full polja ne mogu da se dodaju u red, pa u elsu proveriti,ako je to full polje target ili neko od sekundarnih return ih
+        int q = node.tile.getQ();
+        int r = node.tile.getR();
+        int dist = node.distance + 1;
         Entity entity = null;
-        if (q+1 + r-1 >= -map.getSize() / 2 && q+1 + r-1 <= map.getSize() / 2 && Math.abs(q+1) <= map.getSize() / 2 && Math.abs(r-1) <= map.getSize() / 2 )
-            if ((entity = game.getMap().getTile(q+1, r-1).getEntity()) instanceof Asteroid) /** Luka pliz proveri jel bi ovo bilo ok */
-                queue.add(new Node(map.getTile(q+1,r-1),1,game.hexDistance(q+1,r-1,target.getQ(), target.getR()) + -Math.floorDiv(-((Asteroid)entity).getHealth(), 100),"attack," + Integer.toString(q + 1) + "," + Integer.toString(r - 1)));
-            else                                        /** -Math.floorDiv(-((Asteroid)entity).getHealth(), 100) --> heuristika se povecava za gornji ceo deo helta asteroida podeljenih sa 100 (helti asteroida su 265 -> heuristika += 3)  */
-                if (entity instanceof Wormhole || entity instanceof Blackhole) {} /** ovo mi je kao za full polja da ne radi nista */
-                else
-                    queue.add(new Node(map.getTile(q+1,r-1),1,game.hexDistance(q+1,r-1,target.getQ(), target.getR()),"move," + Integer.toString(q + 1) + "," + Integer.toString(r - 1)));
+        Tile tile = null;
+        if (q+1 + r-1 >= -map.getSize() / 2 && q+1 + r-1 <= map.getSize() / 2 && Math.abs(q+1) <= map.getSize() / 2 && Math.abs(r-1) <= map.getSize() / 2 ) {
+            tile = game.getMap().getTile(q+1, r-1);
+            if(node.move == null) // ovo je prvo dodavanje
+                visitNode(tile,dist,target,queue,visited,game, "move," + Integer.toString(tile.getQ()) + "," + Integer.toString(tile.getR()));
+            else visitNode(tile, dist, target, queue, visited, game, node.move); // pvp je propagacija; treba prvo dodavanje da se salje dalje uvek
+        }
+        if (q-1 + r+1 >= -map.getSize() / 2 && q-1 + r+1 <= map.getSize() / 2 && Math.abs(q-1) <= map.getSize() / 2 && Math.abs(r+1) <= map.getSize() / 2) {
+            tile = game.getMap().getTile(q - 1, r + 1);
+            if(node.move == null)
+                visitNode(tile,dist,target,queue,visited,game, "move," + Integer.toString(tile.getQ()) + "," + Integer.toString(tile.getR()));
+            else visitNode(tile, dist, target, queue, visited, game, node.move);
+        }
+        if (q+1 + r >= -map.getSize() / 2 && q+1 + r <= map.getSize() / 2 && Math.abs(q+1) <= map.getSize() / 2 && Math.abs(r) <= map.getSize() / 2){
+            tile = game.getMap().getTile(q+1, r);
+            if(node.move == null)
+                visitNode(tile,dist,target,queue,visited,game, "move," + Integer.toString(tile.getQ()) + "," + Integer.toString(tile.getR()));
+            else visitNode(tile, dist, target, queue, visited, game, node.move);
+        }
 
-        if (q-1 + r+1 >= -map.getSize() / 2 && q-1 + r+1 <= map.getSize() / 2 && Math.abs(q-1) <= map.getSize() / 2 && Math.abs(r+1) <= map.getSize() / 2)
-            if ((entity = game.getMap().getTile(q-1, r+1).getEntity()) instanceof Asteroid)
-                queue.add(new Node(map.getTile(q-1,r+1),1,game.hexDistance(q-1,r+1,target.getQ(), target.getR()) + -Math.floorDiv(-((Asteroid)entity).getHealth(), 100),"attack," + Integer.toString(q - 1) + "," + Integer.toString(r + 1)));
-            else
-                if (entity instanceof Wormhole || entity instanceof Blackhole) {}
-                else
-                    queue.add(new Node(map.getTile(q-1,r+1),1,game.hexDistance(q-1,r+1,target.getQ(), target.getR()),"move," + Integer.toString(q - 1) + "," + Integer.toString(r + 1)));
+        if (q-1 + r >= -map.getSize() / 2 && q-1 + r <= map.getSize() / 2 && Math.abs(q-1) <= map.getSize() / 2 && Math.abs(r) <= map.getSize() / 2){
+            tile = game.getMap().getTile(q-1, r);
+            if(node.move == null)
+                visitNode(tile,dist,target,queue,visited,game, "move," + Integer.toString(tile.getQ()) + "," + Integer.toString(tile.getR()));
+            else visitNode(tile, dist, target, queue, visited, game, node.move);
+        }
 
-        if (q+1 + r >= -map.getSize() / 2 && q+1 + r <= map.getSize() / 2 && Math.abs(q+1) <= map.getSize() / 2 && Math.abs(r) <= map.getSize() / 2)
-            if ((entity = game.getMap().getTile(q+1, r).getEntity()) instanceof Asteroid)
-                queue.add(new Node(map.getTile(q+1,r),1,game.hexDistance(q+1,r,target.getQ(), target.getR()) + -Math.floorDiv(-((Asteroid)entity).getHealth(), 100),"attack," + Integer.toString(q + 1) + "," + Integer.toString(r)));
-            else
-                if (entity instanceof Wormhole || entity instanceof Blackhole) {}
-                else
-                    queue.add(new Node(map.getTile(q+1,r),1,game.hexDistance(q+1,r,target.getQ(), target.getR()),"move," + Integer.toString(q + 1) + "," + Integer.toString(r)));
+        if (q + r+1 >= -map.getSize() / 2 && q + r+1 <= map.getSize() / 2 && Math.abs(q) <= map.getSize() / 2 && Math.abs(r+1) <= map.getSize() / 2){
+            tile = game.getMap().getTile(q, r+1);
+            if(node.move == null)
+                visitNode(tile,dist,target,queue,visited,game, "move," + Integer.toString(tile.getQ()) + "," + Integer.toString(tile.getR()));
+            else visitNode(tile, dist, target, queue, visited, game, node.move);
+        }
 
-        if (q-1 + r >= -map.getSize() / 2 && q-1 + r <= map.getSize() / 2 && Math.abs(q-1) <= map.getSize() / 2 && Math.abs(r) <= map.getSize() / 2)
-            if ((entity = game.getMap().getTile(q-1, r).getEntity()) instanceof Asteroid)
-                queue.add(new Node(map.getTile(q-1,r),1,game.hexDistance(q-1,r,target.getQ(), target.getR()) + -Math.floorDiv(-((Asteroid)entity).getHealth(), 100),"attack," + Integer.toString(q - 1) + "," + Integer.toString(r)));
-            else
-                if (entity instanceof Wormhole || entity instanceof Blackhole) {}
-                else
-                    queue.add(new Node(map.getTile(q-1,r),1,game.hexDistance(q-1,r,target.getQ(), target.getR()),"move," + Integer.toString(q - 1) + "," + Integer.toString(r)));
+        if (q + r-1 >= -map.getSize() / 2 && q + r-1 <= map.getSize() / 2 && Math.abs(q) <= map.getSize() / 2 && Math.abs(r-1) <= map.getSize() / 2){
+            tile = game.getMap().getTile(q, r-1);
+            if(node.move == null)
+                visitNode(tile,dist,target,queue,visited,game, "move," + Integer.toString(tile.getQ()) + "," + Integer.toString(tile.getR()));
+            else visitNode(tile, dist, target, queue, visited, game, node.move);
+        }
 
-        if (q + r+1 >= -map.getSize() / 2 && q + r+1 <= map.getSize() / 2 && Math.abs(q) <= map.getSize() / 2 && Math.abs(r+1) <= map.getSize() / 2)
-            if ((entity = game.getMap().getTile(q, r+1).getEntity()) instanceof Asteroid)
-                queue.add(new Node(map.getTile(q,r+1),1,game.hexDistance(q,r+1,target.getQ(), target.getR()) + -Math.floorDiv(-((Asteroid)entity).getHealth(), 100),"attack," + Integer.toString(q) + "," + Integer.toString(r + 1)));
-            else
-                if (entity instanceof Wormhole || entity instanceof Blackhole) {}
-                else
-                    queue.add(new Node(map.getTile(q,r+1),1,game.hexDistance(q,r+1,target.getQ(), target.getR()),"move," + Integer.toString(q) + "," + Integer.toString(r + 1)));
+        //return queue;
+    }
 
-        if (q + r-1 >= -map.getSize() / 2 && q + r-1 <= map.getSize() / 2 && Math.abs(q) <= map.getSize() / 2 && Math.abs(r-1) <= map.getSize() / 2)
-            if ((entity = game.getMap().getTile(q, r-1).getEntity()) instanceof Asteroid)
-                queue.add(new Node(map.getTile(q,r-1),1,game.hexDistance(q,r-1,target.getQ(), target.getR()) + -Math.floorDiv(-((Asteroid)entity).getHealth(), 100),"attack," + Integer.toString(q) + "," + Integer.toString(r - 1)));
-            else
-                if (entity instanceof Wormhole || entity instanceof Blackhole) {}
-                else
-                    queue.add(new Node(map.getTile(q,r-1),1,game.hexDistance(q,r-1,target.getQ(), target.getR()),"move," + Integer.toString(q) + "," + Integer.toString(r - 1)));
+    private void visitNode(Tile tile, int dist, Tile target, PriorityQueue<Node> queue, Set<Tile> visited, GameTraining game, String move){
+        Entity entity = tile.getEntity();
+        Node node = null;
 
-        return queue;
+        if (!visited.contains(tile)) {
+            if ((entity = tile.getEntity()) instanceof Asteroid) /** Luka pliz proveri jel bi ovo bilo ok */ /** -Math.floorDiv(-((Asteroid)entity).getHealth(), 100) --> heuristika se povecava za gornji ceo deo helta asteroida podeljenih sa 100 (helti asteroida su 265 -> heuristika += 3)  */
+                node = new Node(tile, dist + (int) Math.ceil((double) (((Asteroid) entity).getHealth()) / this.getPower()), game.hexDistance(tile.getQ(), tile.getR(), target.getQ(), target.getR()), move);
+            else if ( entity instanceof Blackhole) /** ovo mi je kao za full polja da ne radi nista */
+                node = new Node(tile, dist + 2, game.hexDistance(tile.getQ(), tile.getR(), target.getQ(), target.getR()), move);
+            else if (entity instanceof Wormhole) {
+                // TODO
+            } else if( entity instanceof Boss ){
+                //node = new Node(tile, dist, game.hexDistance(tile.getQ(), tile.getR(), target.getQ(), target.getR()), move); // ovo ako ocu da ide u queue, pa da se search zavrsi kad ga popujem iz queue
+                return; // NE MOZE DA NAGAZI
+            }else {
+                for(Player pl : game.getPlayers().values()){
+                    if (pl.getPlayerIdx() == this.playerIdx)
+                        continue;
+                    if (pl.getQ() == tile.getQ() && pl.getR() == tile.getR())
+                        return; // PLAYERA NE MOZE DA NAGAZI
+                }
+                if (node == null)
+                    node = new Node(tile, dist, game.hexDistance(tile.getQ(), tile.getR(), target.getQ(), target.getR()), move);
+            }
+            if (node != null){
+                queue.add(node);
+                visited.add(tile);
+            }
+        }
     }
 
 
