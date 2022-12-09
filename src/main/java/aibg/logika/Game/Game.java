@@ -223,7 +223,7 @@ public class Game implements Serializable {
         return false;
     }
 
-    private int hexDistance(int startQ, int startR, int endQ, int endR) {
+    public int hexDistance(int startQ, int startR, int endQ, int endR) {
         return (Math.abs(startQ - endQ) + Math.abs(startR - endR) + Math.abs(startQ + startR - endQ - endR)) / 2;
     }
 
