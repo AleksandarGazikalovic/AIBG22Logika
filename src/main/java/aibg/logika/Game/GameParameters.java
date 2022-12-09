@@ -18,6 +18,6 @@ public class GameParameters {
     public static final int POWER_INCREMENT = 50;
     public static final int ASTEROID_HEALTH = 350;
     public static final int BOSS_POWER = 250;
-    public static final int SCORE_ON_KILL = 100;
+    public static final int SCORE_ON_HIT = 100;
 
 }

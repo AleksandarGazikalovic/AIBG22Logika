@@ -77,18 +77,18 @@ public class Player implements Entity {
             health-= ((Player) attacker).getPower();
             ((Player)attacker).increaseExperience(GameParameters.EXP_ON_HIT);
             if(health<=0){
-                deaths++;
+                this.deaths++;
+                this.setTrapped(false);
                 ((Player)attacker).increaseExperience(GameParameters.EXP_ON_KILL);
-                ((Player)attacker).increaseScore(GameParameters.SCORE_ON_KILL);
                 ((Player)attacker).kills++;
                 ((Player)attacker).setKD(functionKD(((Player) attacker).getKills(),((Player) attacker).getDeaths()));
                 this.setKD(functionKD(this.kills, this.deaths));
                 respawn(game);
             }
         } else if (attacker instanceof Boss) {
-            health-= ((Boss) attacker).getPower();
+            this.health-= ((Boss) attacker).getPower();
             if(health<=0){
-                deaths++;
+                this.deaths++;
                 this.setKD(functionKD(this.kills, this.deaths));
                 respawn(game);
             }
