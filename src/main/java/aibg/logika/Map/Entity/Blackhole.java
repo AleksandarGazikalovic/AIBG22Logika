@@ -37,6 +37,8 @@ public class Blackhole implements Entity{
     public void attacked(Entity attacker, Game game, int q, int r) {
         if(trappedPlayer!=null){
             trappedPlayer.attacked(attacker, game, q, r);
+        }else{
+            ((Player)attacker).increaseScore(((Player) attacker).getPower());
         }
         else{
             if (attacker instanceof Player) {

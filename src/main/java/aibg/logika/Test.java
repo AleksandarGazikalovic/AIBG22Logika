@@ -20,7 +20,7 @@ import java.util.Scanner;
 public class Test {
     public static void main(String[] args) {
         String MAPS_FOLDER = "./maps";
-        URL mapsURL = Test.class.getClassLoader().getResource(MAPS_FOLDER+"finalMap.txt");
+        URL mapsURL = Test.class.getClassLoader().getResource(MAPS_FOLDER+"FirstRoundTopicAIBGaziBre.txt");
         Map map = new Map(29, mapsURL);
         ArrayList<ArrayList<Tile>> tiles = map.getTiles();
         List<String> username = new ArrayList<>();

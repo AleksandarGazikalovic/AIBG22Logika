@@ -39,7 +39,7 @@ public class Health implements Entity {
         }
     }
 
-    @Override //TODO
+    @Override
     public void stepOn(Player player, Game game, int q, int r) {
         player.setQ(q);
         player.setR(r);
@@ -48,8 +48,8 @@ public class Health implements Entity {
         game.getMap().getTile(q,r).setEntity(game.getMap().getEmptyObj());
     }
 
-    @Override //TODO
+    @Override
     public void attacked(Entity attacker, Game game, int q, int r) {
-
+        if(attacker instanceof Player) ((Player)attacker).illegalAction();
     }
 }
