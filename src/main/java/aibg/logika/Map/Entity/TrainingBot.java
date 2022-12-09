@@ -19,8 +19,9 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.Semaphore;
 
+import static aibg.logika.Game.GameParameters.ASTEROID_HEALTH;
 import static java.lang.Integer.max;
-import static java.lang.Math.abs;
+import static java.lang.Math.ceil;
 
 @Getter
 @Setter
@@ -74,22 +75,11 @@ public class TrainingBot extends Player{
      * @return Move action towards target or secondary
      */
     private String imAStar(Tile target, Set<Entity> secondary, GameTraining game){
-        PriorityQueue<Node> queue = new PriorityQueue<Node>();
+        PriorityQueue<Node> queue = new PriorityQueue<>(11, new NodeComparator());
         Set<Tile> visited = new HashSet<>();
-        int q = this.q;
-        int r = this.r; //TODO dodati u uslove da full polja ne mogu da se dodaju u red, pa u elsu proveriti,ako je to full polje target ili neko od sekundarnih return ih
-        if (q+1 + r-1 >= -map.getSize() / 2 && q+1 + r-1 <= map.getSize() / 2 && Math.abs(q+1) <= map.getSize() / 2 && Math.abs(r-1) <= map.getSize() / 2 )
-            queue.add(new Node(map.getTile(q+1,r-1),1,game.hexDistance(q+1,r-1,target.getQ(), target.getR()),"move," + Integer.toString(q + 1) + "," + Integer.toString(r - 1)));
-        if (q-1 + r+1 >= -map.getSize() / 2 && q-1 + r+1 <= map.getSize() / 2 && Math.abs(q-1) <= map.getSize() / 2 && Math.abs(r+1) <= map.getSize() / 2)
-            queue.add(new Node(map.getTile(q-1,r+1),1,game.hexDistance(q-1,r+1,target.getQ(), target.getR()),"move," + Integer.toString(q - 1) + "," + Integer.toString(r + 1)));
-        if (q+1 + r >= -map.getSize() / 2 && q+1 + r <= map.getSize() / 2 && Math.abs(q+1) <= map.getSize() / 2 && Math.abs(r) <= map.getSize() / 2)
-            queue.add(new Node(map.getTile(q+1,r),1,game.hexDistance(q+1,r,target.getQ(), target.getR()),"move," + Integer.toString(q + 1) + "," + Integer.toString(r)));
-        if (q-1 + r >= -map.getSize() / 2 && q-1 + r <= map.getSize() / 2 && Math.abs(q-1) <= map.getSize() / 2 && Math.abs(r) <= map.getSize() / 2)
-            queue.add(new Node(map.getTile(q-1,r),1,game.hexDistance(q-1,r,target.getQ(), target.getR()),"move," + Integer.toString(q - 1) + "," + Integer.toString(r)));
-        if (q + r+1 >= -map.getSize() / 2 && q + r+1 <= map.getSize() / 2 && Math.abs(q) <= map.getSize() / 2 && Math.abs(r+1) <= map.getSize() / 2)
-        queue.add(new Node(map.getTile(q,r+1),1,game.hexDistance(q,r+1,target.getQ(), target.getR()),"move," + Integer.toString(q) + "," + Integer.toString(r + 1)));
-        if (q + r-1 >= -map.getSize() / 2 && q + r-1 <= map.getSize() / 2 && Math.abs(q) <= map.getSize() / 2 && Math.abs(r-1) <= map.getSize() / 2)
-            queue.add(new Node(map.getTile(q,r-1),1,game.hexDistance(q,r-1,target.getQ(), target.getR()),"move," + Integer.toString(q) + "," + Integer.toString(r - 1)));
+
+        fillQueue(target, queue, game); /** napuni prioritetni red susedima polja na kome se bot trenutno nalazi */
+
         while(!queue.isEmpty()){
             Node min= queue.poll();
             while(visited.contains(min)){
@@ -101,6 +91,62 @@ public class TrainingBot extends Player{
         }
 
         return randomMove(); //ako alg ne vrati nista vrati rendom move
+    }
+
+
+    private PriorityQueue<Node> fillQueue(Tile target, PriorityQueue<Node> queue, GameTraining game) {
+        int q = this.q;
+        int r = this.r; //TODO dodati u uslove da full polja ne mogu da se dodaju u red, pa u elsu proveriti,ako je to full polje target ili neko od sekundarnih return ih
+        Entity entity = null;
+        if (q+1 + r-1 >= -map.getSize() / 2 && q+1 + r-1 <= map.getSize() / 2 && Math.abs(q+1) <= map.getSize() / 2 && Math.abs(r-1) <= map.getSize() / 2 )
+            if ((entity = game.getMap().getTile(q+1, r-1).getEntity()) instanceof Asteroid) /** Luka pliz proveri jel bi ovo bilo ok */
+                queue.add(new Node(map.getTile(q+1,r-1),1,game.hexDistance(q+1,r-1,target.getQ(), target.getR()) + -Math.floorDiv(-((Asteroid)entity).getHealth(), 100),"attack," + Integer.toString(q + 1) + "," + Integer.toString(r - 1)));
+            else                                        /** -Math.floorDiv(-((Asteroid)entity).getHealth(), 100) --> heuristika se povecava za gornji ceo deo helta asteroida podeljenih sa 100 (helti asteroida su 265 -> heuristika += 3)  */
+                if (entity instanceof Wormhole || entity instanceof Blackhole) {} /** ovo mi je kao za full polja da ne radi nista */
+                else
+                    queue.add(new Node(map.getTile(q+1,r-1),1,game.hexDistance(q+1,r-1,target.getQ(), target.getR()),"move," + Integer.toString(q + 1) + "," + Integer.toString(r - 1)));
+
+        if (q-1 + r+1 >= -map.getSize() / 2 && q-1 + r+1 <= map.getSize() / 2 && Math.abs(q-1) <= map.getSize() / 2 && Math.abs(r+1) <= map.getSize() / 2)
+            if ((entity = game.getMap().getTile(q-1, r+1).getEntity()) instanceof Asteroid)
+                queue.add(new Node(map.getTile(q-1,r+1),1,game.hexDistance(q-1,r+1,target.getQ(), target.getR()) + -Math.floorDiv(-((Asteroid)entity).getHealth(), 100),"attack," + Integer.toString(q - 1) + "," + Integer.toString(r + 1)));
+            else
+                if (entity instanceof Wormhole || entity instanceof Blackhole) {}
+                else
+                    queue.add(new Node(map.getTile(q-1,r+1),1,game.hexDistance(q-1,r+1,target.getQ(), target.getR()),"move," + Integer.toString(q - 1) + "," + Integer.toString(r + 1)));
+
+        if (q+1 + r >= -map.getSize() / 2 && q+1 + r <= map.getSize() / 2 && Math.abs(q+1) <= map.getSize() / 2 && Math.abs(r) <= map.getSize() / 2)
+            if ((entity = game.getMap().getTile(q+1, r).getEntity()) instanceof Asteroid)
+                queue.add(new Node(map.getTile(q+1,r),1,game.hexDistance(q+1,r,target.getQ(), target.getR()) + -Math.floorDiv(-((Asteroid)entity).getHealth(), 100),"attack," + Integer.toString(q + 1) + "," + Integer.toString(r)));
+            else
+                if (entity instanceof Wormhole || entity instanceof Blackhole) {}
+                else
+                    queue.add(new Node(map.getTile(q+1,r),1,game.hexDistance(q+1,r,target.getQ(), target.getR()),"move," + Integer.toString(q + 1) + "," + Integer.toString(r)));
+
+        if (q-1 + r >= -map.getSize() / 2 && q-1 + r <= map.getSize() / 2 && Math.abs(q-1) <= map.getSize() / 2 && Math.abs(r) <= map.getSize() / 2)
+            if ((entity = game.getMap().getTile(q-1, r).getEntity()) instanceof Asteroid)
+                queue.add(new Node(map.getTile(q-1,r),1,game.hexDistance(q-1,r,target.getQ(), target.getR()) + -Math.floorDiv(-((Asteroid)entity).getHealth(), 100),"attack," + Integer.toString(q - 1) + "," + Integer.toString(r)));
+            else
+                if (entity instanceof Wormhole || entity instanceof Blackhole) {}
+                else
+                    queue.add(new Node(map.getTile(q-1,r),1,game.hexDistance(q-1,r,target.getQ(), target.getR()),"move," + Integer.toString(q - 1) + "," + Integer.toString(r)));
+
+        if (q + r+1 >= -map.getSize() / 2 && q + r+1 <= map.getSize() / 2 && Math.abs(q) <= map.getSize() / 2 && Math.abs(r+1) <= map.getSize() / 2)
+            if ((entity = game.getMap().getTile(q, r+1).getEntity()) instanceof Asteroid)
+                queue.add(new Node(map.getTile(q,r+1),1,game.hexDistance(q,r+1,target.getQ(), target.getR()) + -Math.floorDiv(-((Asteroid)entity).getHealth(), 100),"attack," + Integer.toString(q) + "," + Integer.toString(r + 1)));
+            else
+                if (entity instanceof Wormhole || entity instanceof Blackhole) {}
+                else
+                    queue.add(new Node(map.getTile(q,r+1),1,game.hexDistance(q,r+1,target.getQ(), target.getR()),"move," + Integer.toString(q) + "," + Integer.toString(r + 1)));
+
+        if (q + r-1 >= -map.getSize() / 2 && q + r-1 <= map.getSize() / 2 && Math.abs(q) <= map.getSize() / 2 && Math.abs(r-1) <= map.getSize() / 2)
+            if ((entity = game.getMap().getTile(q, r-1).getEntity()) instanceof Asteroid)
+                queue.add(new Node(map.getTile(q,r-1),1,game.hexDistance(q,r-1,target.getQ(), target.getR()) + -Math.floorDiv(-((Asteroid)entity).getHealth(), 100),"attack," + Integer.toString(q) + "," + Integer.toString(r - 1)));
+            else
+                if (entity instanceof Wormhole || entity instanceof Blackhole) {}
+                else
+                    queue.add(new Node(map.getTile(q,r-1),1,game.hexDistance(q,r-1,target.getQ(), target.getR()),"move," + Integer.toString(q) + "," + Integer.toString(r - 1)));
+
+        return queue;
     }
 
 
