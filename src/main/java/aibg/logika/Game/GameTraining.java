@@ -2,10 +2,7 @@ package aibg.logika.Game;
 
 import aibg.logika.Map.Entity.*;
 import aibg.logika.Map.Map;
-import aibg.logika.dto.DoActionRequestDTO;
 import aibg.logika.dto.DoActionResponseDTO;
-import aibg.logika.dto.TrainGameStateRequestDTO;
-import aibg.logika.dto.TrainRequestDTO;
 import aibg.logika.service.GameService;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
@@ -15,7 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.concurrent.Semaphore;
 
 @Setter
 @Getter

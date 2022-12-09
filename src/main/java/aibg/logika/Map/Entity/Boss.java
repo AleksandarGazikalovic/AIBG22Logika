@@ -40,7 +40,9 @@ public class Boss implements Entity{
 
     private boolean bossAction = false;
     private ArrayList<Tile> bossAttackedTiles = new ArrayList<>();
+    @JsonIgnore
     private int[] radius = new int[]{6,8,10};
+    @JsonIgnore
     int  range=0;
 
     @Override

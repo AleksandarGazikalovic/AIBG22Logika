@@ -87,7 +87,7 @@ public class Map implements Serializable {
                                     break;
                                 case "WORMHOLE":
                                     int id = mapNode.get(counter).get(counter2).get("id").asInt();
-                                    temp = new Tile(q,r, "FULL", new Wormhole(q,r,id));
+                                    temp = new Tile(q,r, "NORMAL", new Wormhole(q,r,id));
                                     tiles.get(counter).add(temp);
                                     tilemap.put(hash(q,r,-q-r),temp);
                                     wormholes.add((Tile) temp);
@@ -106,7 +106,7 @@ public class Map implements Serializable {
                                     asteroid.add((Tile) temp);
                                     break;
                                 case "BOSS":
-                                    temp = new Tile(q, r, "FULL",boss);
+                                    temp = new Tile(q, r, "FULL", boss);
                                     tiles.get(counter).add(temp);
                                     tilemap.put(hash(q,r,-q-r),temp);
                                     break;

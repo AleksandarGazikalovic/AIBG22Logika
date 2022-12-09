@@ -16,12 +16,11 @@ public class Experience implements Entity{
 
     public static void generate(Map map, HashMap<Integer, Player> players){
         while (true){
-            boolean playerSpotted = false;
-            int size = map.getSize();
-            int firstFencePosition = 11; //nema expirience van prvog fence-a
-            int r = ((int) (Math.random() * (firstFencePosition + firstFencePosition) - firstFencePosition));
-            int q = ((int) (Math.random() * (firstFencePosition + firstFencePosition) - firstFencePosition));
-            if(r+q >=-firstFencePosition && r+q <= firstFencePosition && Math.abs(r) <=firstFencePosition && Math.abs(q) <= firstFencePosition) {
+        boolean playerSpotted = false;
+        int size = map.getSize();
+        int r = ((int) (Math.random() * (size/2 + size/2) - size/2));
+        int q = ((int) (Math.random() * (size/2 + size/2) - size/2));
+        if(r+q >=-size/2 && r+q <= size/2 && Math.abs(r) <=size/2 && Math.abs(q) <= size/2) {
                 Tile tile = map.getTile(q, r);
                 if(tile.getEntity() instanceof Empty){
                     //proverava da li su igraci na tom polju
@@ -40,7 +39,7 @@ public class Experience implements Entity{
         }
     }
 
-    @Override //TODO
+    @Override
     public void stepOn(Player player, Game game, int q, int r) {
         player.setQ(q);
         player.setR(r);
@@ -49,9 +48,9 @@ public class Experience implements Entity{
         game.getMap().getTile(q,r).setEntity(game.getMap().getEmptyObj());
     }
 
-    @Override //TODO
+    @Override
     public void attacked(Entity attacker, Game game, int q, int r) {
-
+        if(attacker instanceof Player) ((Player)attacker).illegalAction();
     }
 
 

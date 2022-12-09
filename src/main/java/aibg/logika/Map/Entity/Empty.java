@@ -32,9 +32,6 @@ public class Empty implements Entity{
      */
     @Override
     public void attacked(Entity attacker, Game game, int q, int r) {
-        if(attacker instanceof Player){
-            ((Player)attacker).illegalAction();
-        }
-        // ~~animacija~~
+        if(attacker instanceof Player) ((Player)attacker).illegalAction();
     }
 }

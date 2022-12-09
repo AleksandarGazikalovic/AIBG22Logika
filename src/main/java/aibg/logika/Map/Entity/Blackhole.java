@@ -35,10 +35,14 @@ public class Blackhole implements Entity{
     /** Sends the attack to trapped player, if there is one*/
     @Override
     public void attacked(Entity attacker, Game game, int q, int r) {
-        if(trappedPlayer!=null){
+        if (trappedPlayer != null) {
             trappedPlayer.attacked(attacker, game, q, r);
         }
-        /*else{attacker.illegalAction();}*/
+        else{
+            if (attacker instanceof Player) {
+                ((Player) attacker).illegalAction();
+            }
+        }
     }
 
 
