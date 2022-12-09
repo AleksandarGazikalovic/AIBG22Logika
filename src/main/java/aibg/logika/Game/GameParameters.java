@@ -11,7 +11,7 @@ public class GameParameters {
     public static final int EXP_GATHER = 30; //menjati
     public static final int EXP_BY_TIME = 5; //ne koristi se ubaciti ako stignemo
     public static final int MAX_LEVEL = 5;
-    public static final int EXP_TO_LVL_UP = 500; //menjati
+    public static final int EXP_TO_LVL_UP = 1000; //menjati
     public static final int HEALTH_INCREMENT = 300;
     public static final int POWER_INCREMENT = 50;
     public static final int ASTEROID_HEALTH = 350;

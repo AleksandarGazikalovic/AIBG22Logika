@@ -70,6 +70,7 @@ public class Game implements Serializable {
         Player active = players.get(playerIdx);
 
         if (action == null) {
+            bossCounter++;
             return "Action is null";
         } else {
             while (bossCounter != 4) {
@@ -79,6 +80,7 @@ public class Game implements Serializable {
                     errorMessage = "Zarobljeni ste u crnoj rupi";
                     break;
                 } else {
+                    action = action.replaceAll(" ","");
                     String[] actionParams = action.split(",");//ja sam za to da bude separator ",", ida i move bude preko koordinata
                     if (Arrays.stream(actionParams).count() != 3) {
                         bossCounter++;
@@ -156,11 +158,13 @@ public class Game implements Serializable {
                 passiveEntity.attacked(active,this, actQ, actR);
                 return "Pokušavate da napadnete polje koje nije namenjeno za napad";
             }
-            Entity obstacle = getObstacle(active, active.getQ(), active.getR(), actQ, actR); //ako ima obstacle, postavlja novi playerAction
-            if (obstacle != null)
-                passiveEntity = obstacle;
-            else playerAttack = new PlayerAttackDTO(active.getPlayerIdx(), actQ, actR); //ako nema obstacle ni problema, cuva prosledjene vrednosti
-            passiveEntity.attacked(active,this, actQ, actR);
+
+             //ako ima obstacle, napada obstacle, inače napada staru metu
+            if (!(attackObstacle(active, active.getQ(), active.getR(), actQ, actR))) {
+                playerAttack = new PlayerAttackDTO(active.getPlayerIdx(), actQ, actR); //ako nema obstacle ni problema, cuva prosledjene vrednosti
+                passiveEntity.attacked(active,this, actQ, actR);
+            }
+
         } else {
             bossCounter++;
             active.illegalAction();
@@ -171,7 +175,7 @@ public class Game implements Serializable {
 
     // pored ovoga, treba proslediti tacne koordinate udara frontu nekako
     /** Checks for obstacles between these coordinates; if obstacle is detected, returns that Entity obstacle and sets playerAttack to obstacle coordinates */
-    private Entity getObstacle(Player active, int startQ, int startR, int endQ, int endR) {
+    private boolean attackObstacle(Player active, int startQ, int startR, int endQ, int endR) {
         int hexDistance = hexDistance(startQ, startR, endQ, endR);
         double q = startQ, r = startR;
         double s = -q - r;
@@ -198,15 +202,17 @@ public class Game implements Serializable {
             for (Player player : players.values()) {
                 if (player.getQ() == cordQ && player.getR() == cordR) {
                     playerAttack = new PlayerAttackDTO(active.getPlayerIdx(), cordQ, cordR);
-                    return player;
+                    player.attacked(active,this, cordQ, cordR);
+                    return true;
                 }
             }
             if (!(map.getTile(cordQ, cordR).getEntity() instanceof Empty)) { // if (!(map.getTile((int) q, (int) r).getEntity() instanceof Empty))
                 playerAttack = new PlayerAttackDTO(active.getPlayerIdx(), cordQ, cordR);
-                return map.getTile(cordQ, cordR).getEntity();  //map.getTile((int) q, (int) r).getEntity();
+                map.getTile(cordQ, cordR).getEntity().attacked(active, this, cordQ, cordR);
+                return true;
             }
         }
-        return null;
+        return false;
     }
 
     private int hexDistance(int startQ, int startR, int endQ, int endR) {
